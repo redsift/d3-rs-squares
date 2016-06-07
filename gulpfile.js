@@ -59,7 +59,7 @@ gulp.task('umd', task.umd = () => {
         .pipe(rename({basename: outputFilename}))
         .pipe(rename({suffix: '.umd-es2015'}))
         .pipe(gulp.dest('distribution/'))
-        // .pipe(uglify())
+        .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('distribution/'));
