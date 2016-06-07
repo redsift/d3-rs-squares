@@ -1,0 +1,114 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css"
+    href="https://static.redsift.io/ui/latest/css/full/redsift-xtra.min.css">
+
+  <style>
+    body {
+      margin: 1em;
+    }
+
+    rect {
+        stroke-width: 0;
+    }
+
+    .day {
+      fill: #f2f2f2;
+
+    }
+
+    .month {
+      font-size: 0.7em;
+    }
+    .wday {
+      font-size: 0.7em;
+    }
+
+    .key {
+      margin-bottom: 32px;
+      margin-right: 32px;
+      display: flex;
+      flex-flow: row;
+      align-items: baseline;
+      justify-content: flex-end;
+
+    }
+    .key span {
+      float: left;
+    }
+    .key .legend {
+        display: inline-block;
+        list-style: none;
+        margin: 0 5px;
+        position: relative;
+        bottom: -1px;
+        float: left;
+    }
+    ul.legend {
+      padding-left: 0px;
+    }
+    .key .legend li {
+        float:left;
+        display: inline-block;
+        margin-right: 4px;
+        width: 10px;
+        height: 10px;
+    }
+
+    .green li.q0-5{background-color:#b0e288;}
+    .green li.q1-5{background-color:#58d655;}
+    .green li.q2-5{background-color:#2bb65b;}
+    .green li.q3-5{background-color:#00a500;}
+    .green li.q4-5{background-color:#016701;}
+
+    .blue li.q0-5{background-color:#7fcbeb;}
+    .blue li.q1-5{background-color:#4875e3;}
+    .blue li.q2-5{background-color:#2a1dc4;}
+    .blue li.q3-5{background-color:#002ca5;}
+    .blue li.q4-5{background-color:#00103a;}
+
+    .purple li.q0-5{background-color:#fccdfc;}
+    .purple li.q1-5{background-color:#df7bdf;}
+    .purple li.q2-5{background-color:#cc48cc;}
+    .purple li.q3-5{background-color:#bb2dbb;}
+    .purple li.q4-5{background-color:#890089;}
+
+
+    div > span {
+        display: block;
+        text-align: center;
+    }
+
+  </style>
+  </head>
+  <body>
+    <h1>SVG Calendar Demo</h2>
+    <div id="elm">
+
+    </div>
+        
+    <script src="https://d3js.org/d3.v4.0.0-alpha.44.min.js"></script>
+    <script src="//static.redsift.io/reusable/d3-rs-svg/latest/d3-rs-svg.umd-es2015.min.js"></script>
+    <script src="/d3-rs-calendar-chart.umd-es2015.min.js"></script>
+    <script>
+
+    'use strict';
+    var points = [
+      [{date: '2016-05-01', value: 10},
+      {date: '2016-05-01', value: 20},
+      {date: '2016-05-05', value: 5},
+      {date: '2016-06-02', value: 15}]
+    ];
+
+    
+    var chart = d3_rs_calendar_chart.html().lastWeeks(12).width(400);
+
+    var textElm = d3.select('#elm')
+      .data(points)
+      .call(chart);
+
+  textElm.transition().delay(5000).call(chart.height(200));
+
+    </script>
+  </body>
+</html>
