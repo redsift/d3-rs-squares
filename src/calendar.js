@@ -41,14 +41,14 @@ export default function chart(id) {
     selection.each(function(data) {
       var cellSize = width / ((lastWeeks+1) * (1+spaceToSizeRatio)),
         cellSpacing = cellSize * spaceToSizeRatio;
-        var suggestedHeight = 10 * cellSize * (1+spaceToSizeRatio);
-        // check fir the stricter constraint
-        if(height && suggestedHeight > height){
-          cellSize = height / (10 * (1+spaceToSizeRatio));
-          cellSpacing = cellSize * spaceToSizeRatio;
-        }else{
-          height = suggestedHeight;
-        }
+      var suggestedHeight = 10 * cellSize * (1+spaceToSizeRatio);
+      // check for the stricter constraint
+      if(height && suggestedHeight > height){
+        cellSize = height / (10 * (1+spaceToSizeRatio));
+        cellSpacing = cellSize * spaceToSizeRatio;
+      }else{
+        height = suggestedHeight;
+      }
       console.log('cellSize', cellSize)
       console.log(width, height, suggestedHeight);
       var node = select(this); 
