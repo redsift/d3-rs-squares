@@ -8,15 +8,18 @@ export default function chart(id) {
 
   var classed = 'calendar-chart',
       dateFormat = d3.timeFormat('%Y-%m-%d'),
+      dateIdFormat = d3.timeFormat('%Y%U'),
       dateDisplayFormat = d3.timeFormat('%d %b %Y'),
+      weekId = d => dateIdFormat(new Date(d[0].date)),
       width = 600,
       height = null,
       lastWeeks = 52,
       spaceToSizeRatio = 0.15,
+      cellSize = width / ((lastWeeks+1) * (1+spaceToSizeRatio)),
+      cellSpacing = cellSize * spaceToSizeRatio,
       colours = coloursGreen;
 
   function fullCalendar(w, data){
-    console.log('firing', w, data.length);
     var today = Date.now();
     var dataByDate = d3.nest()
       .key(d => dateFormat(new Date(d.date)))
@@ -39,8 +42,8 @@ export default function chart(id) {
         transition = (context.selection !== undefined);
 
     selection.each(function(data) {
-      var cellSize = width / ((lastWeeks+1) * (1+spaceToSizeRatio)),
-        cellSpacing = cellSize * spaceToSizeRatio;
+      cellSize = width / ((lastWeeks+1) * (1+spaceToSizeRatio)),
+      cellSpacing = cellSize * spaceToSizeRatio;
       var suggestedHeight = 10 * cellSize * (1+spaceToSizeRatio);
       // check for the stricter constraint
       if(height && suggestedHeight > height){
@@ -49,8 +52,8 @@ export default function chart(id) {
       }else{
         height = suggestedHeight;
       }
+      console.log('width', width, 'height', height, 'suggested', suggestedHeight);
       console.log('cellSize', cellSize)
-      console.log(width, height, suggestedHeight);
       var node = select(this); 
       var root = svg().width(width).height(height).margin(0);
       var tnode = node;
@@ -65,36 +68,37 @@ export default function chart(id) {
         .domain(d3.extent(data, d => d.value))
         .range(colours);
 
-      var week = elmS.selectAll('g').data(fullCalendar(lastWeeks, data));
+      var week = elmS.selectAll('g').data(fullCalendar(lastWeeks, data), weekId);
       week.exit().remove();
       week = week.enter()
-            .append('g')
-            .attr('transform', (_,i) => 'translate(' + ( i * (cellSize + cellSpacing)) + ', 0)')
-          .merge(week);
+          .append('g')
+          .attr('id', weekId)
+        .merge(week);
 
       var day = week.selectAll('.day').data((d) => d)
-      day.exit().remove();
+      day.exit().transition()
+        .attr('width', 0)
+        .attr('height', 0)
+        .attr('y', d => new Date(d.date).getDay() * (cellSize + cellSpacing))
+        .remove();
       day = day.enter()
           .append('rect')
             .attr('class', 'day')
-            .attr('width', cellSize)
-            .attr('height', cellSize)
-            .attr('y', d => (new Date(d.date).getDay() * (cellSize + cellSpacing)))
             .attr('data-date', d => dateFormat(new Date(d.date)))
+            .style('fill', d => d.value ? quantize(d.value) : '')
           .merge(day)
-            .style('fill', d => d.value ? quantize(d.value) : '');
 
 
       if (transition === true) {
         week = week.transition(context);
         day = day.transition(context);
+      }
+
 
       week.attr('transform', (_,i) => 'translate(' + ( i * (cellSize + cellSpacing)) + ', 0)');
       day.attr('width', cellSize)
-        .attr('height', cellSize)
-        .attr('y', d => new Date(d.date).getDay() * (cellSize + cellSpacing))
-        .style('fill', d => d.value ? quantize(d.value) : '');
-      }
+          .attr('height', cellSize)
+          .attr('y', d => new Date(d.date).getDay() * (cellSize + cellSpacing));
 
     });
   }
@@ -113,7 +117,17 @@ export default function chart(id) {
   };
 
   _impl.height = function(_) {
-    return arguments.length ? (height = _, _impl) : height;
+    if(!arguments.length){
+      return height;
+    }
+    var suggestedHeight = 10 * cellSize * (1+spaceToSizeRatio);
+    if(suggestedHeight > _){
+        cellSize = height / (10 * (1+spaceToSizeRatio));
+        cellSpacing = cellSize * spaceToSizeRatio;
+      }
+    height = _;
+
+    return _impl
   };
 
   _impl.lastWeeks = function(_) {
