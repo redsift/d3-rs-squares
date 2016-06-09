@@ -1,4 +1,5 @@
 import { select } from 'd3-selection';
+import * as time from 'd3-time-format';
 import { html as svg } from '@redsift/d3-rs-svg';
 
 export default function chart(id) {
@@ -9,9 +10,9 @@ export default function chart(id) {
   };
 
   var classed = 'calendar-chart',
-      dateFormat = d3.timeFormat('%Y-%m-%d'),
-      dateIdFormat = d3.timeFormat('%Y%U'),
-      dateDisplayFormat = d3.timeFormat('%d %b %Y'),
+      dateFormat = time.timeFormat('%Y-%m-%d'),
+      dateIdFormat = time.timeFormat('%Y%U'),
+      // dateDisplayFormat = d3.timeFormat('%d %b %Y'),
       weekId = d => dateIdFormat(new Date(d[0].date)),
       width = 800,
       height = null,
