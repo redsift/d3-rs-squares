@@ -103,13 +103,14 @@
     
     var chart = d3_rs_calendar_chart.html().lastWeeks(12);
 
-    var textElm = d3.select('#elm')
+    var chartElm = d3.select('#elm')
       .datum(points)
       .call(chart);
 
-    textElm.transition().delay(1500).call(chart.lastWeeks(20));
-    textElm.transition().delay(3000).call(chart.lastWeeks(40).width(1200).colours('purple'));
-    textElm.transition().delay(4500).call(chart.width(400));
+    chartElm.transition().delay(1500).call(chart.lastWeeks(20));
+    chartElm.transition().delay(3000).call(chart.lastWeeks(40).width(1200).colours('purple'));
+    chartElm.transition().delay(4500).call(chart.width(600));
+    chartElm.transition().delay(6000).call(chart.scale(1.5));
 
     </script>
   </body>
