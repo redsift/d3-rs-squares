@@ -1,5 +1,9 @@
 import { select } from 'd3-selection';
-import * as time from 'd3-time-format';
+import * as d3TimeFormat from 'd3-time-format';
+import { sum, extent } from 'd3-array';
+import { nest} from 'd3-collection';
+import { timeSunday, timeSundays, timeDays, timeWeek} from 'd3-time';
+import { scaleQuantize } from 'd3-scale';
 import { html as svg } from '@redsift/d3-rs-svg';
 
 export default function chart(id) {
@@ -10,8 +14,8 @@ export default function chart(id) {
   };
 
   var classed = 'calendar-chart',
-      dateFormat = time.timeFormat('%Y-%m-%d'),
-      dateIdFormat = time.timeFormat('%Y%U'),
+      dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
+      dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
       // dateDisplayFormat = d3.timeFormat('%d %b %Y'),
       weekId = d => dateIdFormat(new Date(d[0].date)),
       width = 800,
@@ -25,15 +29,15 @@ export default function chart(id) {
 
   function fullCalendar(w, data){
     var today = Date.now();
-    var dataByDate = d3.nest()
+    var dataByDate = nest()
       .key(d => dateFormat(new Date(d.date)))
-      .rollup(d => d3.sum(d, g => +g.value))
+      .rollup(d => sum(d, g => +g.value))
       .map(data);
 
-    return d3.timeSundays(d3.timeWeek.offset(today, -w-1), today)
-        .map(sunday => d3.timeDays(
-            Math.max(d3.timeSunday.offset(today, -w), sunday),
-            Math.min(today, d3.timeWeek.offset(sunday, 1))
+    return timeSundays(timeWeek.offset(today, -w-1), today)
+        .map(sunday => timeDays(
+            Math.max(timeSunday.offset(today, -w), sunday),
+            Math.min(today, timeWeek.offset(sunday, 1))
           ).map(d => ({
               date: dateFormat(d),
               value: dataByDate.get(dateFormat(d)) || 0
@@ -67,8 +71,8 @@ export default function chart(id) {
 
       var elmS = node.select(root.child());
       
-      var quantize = d3.scaleQuantize()
-        .domain(d3.extent(data, d => d.value))
+      var quantize = scaleQuantize()
+        .domain(extent(data, d => d.value))
         .range(colours);
 
       var week = elmS.selectAll('g').data(fullCalendar(lastWeeks, data), weekId);
