@@ -2,9 +2,11 @@ import { select } from 'd3-selection';
 import { html as svg } from '@redsift/d3-rs-svg';
 
 export default function chart(id) {
-  var coloursGreen = ['#b0e288', '#58d655', '#2bb65b', '#00a500', '#016701'],
-  coloursBlue = ['#7fcbeb', '#4875e3', '#2a1dc4', '#002ca5', '#00103a'],
-  coloursPurple = ['#fccdfc', '#df7bdf', '#cc48cc', '#bb2dbb', '#890089'];
+  var defaultColours = {
+    green: ['#b0e288', '#58d655', '#2bb65b', '#00a500', '#016701'],
+    blue: ['#7fcbeb', '#4875e3', '#2a1dc4', '#002ca5', '#00103a'],
+    purple: ['#fccdfc', '#df7bdf', '#cc48cc', '#bb2dbb', '#890089']
+  };
 
   var classed = 'calendar-chart',
       dateFormat = d3.timeFormat('%Y-%m-%d'),
@@ -17,7 +19,7 @@ export default function chart(id) {
       spaceToSizeRatio = 0.15,
       cellSize = width / ((lastWeeks+1) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio,
-      colours = coloursGreen;
+      colours = defaultColours.green;
 
   function fullCalendar(w, data){
     var today = Date.now();
@@ -52,8 +54,7 @@ export default function chart(id) {
       }else{
         height = suggestedHeight;
       }
-      console.log('width', width, 'height', height, 'suggested', suggestedHeight);
-      console.log('cellSize', cellSize)
+
       var node = select(this); 
       var root = svg().width(width).height(height).margin(0);
       var tnode = node;
@@ -85,7 +86,6 @@ export default function chart(id) {
           .append('rect')
             .attr('class', 'day')
             .attr('data-date', d => dateFormat(new Date(d.date)))
-            .style('fill', d => d.value ? quantize(d.value) : '')
           .merge(day)
 
 
@@ -98,7 +98,8 @@ export default function chart(id) {
       week.attr('transform', (_,i) => 'translate(' + ( i * (cellSize + cellSpacing)) + ', 0)');
       day.attr('width', cellSize)
           .attr('height', cellSize)
-          .attr('y', d => new Date(d.date).getDay() * (cellSize + cellSpacing));
+          .attr('y', d => new Date(d.date).getDay() * (cellSize + cellSpacing))
+          .style('fill', d => d.value ? quantize(d.value) : '');
 
     });
   }
@@ -135,7 +136,15 @@ export default function chart(id) {
   };
 
   _impl.colours = function(_) {
-    return arguments.length ? (colours = _, _impl) : colours;
+    if(!arguments.length){
+      return colours;
+    }
+    if (toString.call(_) === '[object Array]'){
+      colours = _
+    }else{
+      colours = defaultColours[_]
+    }
+    return _impl;
   };
 
   return _impl;
