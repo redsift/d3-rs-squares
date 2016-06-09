@@ -92,6 +92,7 @@ export default function chart(id) {
           .append('rect')
             .attr('class', 'day')
             .attr('data-date', d => dateFormat(new Date(d.date)))
+            .style('fill', '#f2f2f2')
           .merge(day)
 
 
@@ -105,7 +106,7 @@ export default function chart(id) {
       day.attr('width', cellSize)
           .attr('height', cellSize)
           .attr('y', d => new Date(d.date).getDay() * (cellSize + cellSpacing))
-          .style('fill', d => d.value ? quantize(d.value) : '');
+          .style('fill', d => d.value ? quantize(d.value) : '#f2f2f2');
 
     });
   }
