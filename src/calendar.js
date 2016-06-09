@@ -17,6 +17,7 @@ export default function chart(id) {
       height = null,
       lastWeeks = 52,
       spaceToSizeRatio = 0.15,
+      scale = 1.0,
       cellSize = width / ((lastWeeks+1) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio,
       colours = defaultColours.green;
@@ -56,7 +57,7 @@ export default function chart(id) {
       }
 
       var node = select(this); 
-      var root = svg().width(width).height(height).margin(0);
+      var root = svg().width(width).height(height).scale(scale).margin(0);
       var tnode = node;
       if (transition) {
         tnode = node.transition(context);
@@ -130,6 +131,10 @@ export default function chart(id) {
 
     return _impl
   };
+
+  _impl.scale = function(value) {
+    return arguments.length ? (scale = value, _impl) : scale;
+  }; 
 
   _impl.lastWeeks = function(_) {
     return arguments.length ? (lastWeeks = _, _impl) : lastWeeks;
