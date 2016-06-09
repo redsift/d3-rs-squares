@@ -23,7 +23,8 @@ export default function chart(id) {
       lastWeeks = 52,
       spaceToSizeRatio = 0.15,
       scale = 1.0,
-      cellSize = width / ((lastWeeks+1) * (1+spaceToSizeRatio)),
+      margin = 20,
+      cellSize = (width-2*margin) / ((lastWeeks+1) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio,
       colours = defaultColours.green;
 
@@ -50,12 +51,12 @@ export default function chart(id) {
         transition = (context.selection !== undefined);
 
     selection.each(function(data) {
-      cellSize = width / ((lastWeeks+1) * (1+spaceToSizeRatio)),
+      cellSize = (width - 2*margin) / ((lastWeeks+1) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio;
-      var suggestedHeight = 10 * cellSize * (1+spaceToSizeRatio);
+      var suggestedHeight = 8 * cellSize * (1+spaceToSizeRatio) + margin;
       // check for the stricter constraint
       if(height && suggestedHeight > height){
-        cellSize = height / (10 * (1+spaceToSizeRatio));
+        cellSize = (height-margin) / (8 * (1+spaceToSizeRatio));
         cellSpacing = cellSize * spaceToSizeRatio;
       }else{
         height = suggestedHeight;
@@ -75,7 +76,10 @@ export default function chart(id) {
         .domain(extent(data, d => d.value))
         .range(colours);
 
-      var week = elmS.selectAll('g').data(fullCalendar(lastWeeks, data), weekId);
+      data = fullCalendar(lastWeeks, data);
+      console.log(data);
+      var wS = elmS.selectAll('g').data(data, weekId);
+      var week = wS;
       week.exit().remove();
       week = week.enter()
           .append('g')
@@ -95,17 +99,48 @@ export default function chart(id) {
             .style('fill', '#f2f2f2')
           .merge(day)
 
+      var xScale = d3.scaleTime()
+          .domain([new Date(data[1][0].date), new Date(data[1][6].date)])
+          .range([cellSize/2, 6.5* cellSize * (1+spaceToSizeRatio)]);
 
+      var dayAxis = d3.axisLeft()
+        .scale(xScale)
+        .ticks(3)
+        .tickFormat(d => d3TimeFormat.timeFormat('%a')(d)[0]);
+
+      elmS.append('g')
+        .attr("class", "day axis")
+        .attr('transform', 'translate('+ margin + ','+ (margin+8) +')')
+        .call(dayAxis);
+
+      var months = wS;
+      months.exit().remove();
+
+      months = months.enter()
+        .filter(d => new Date(d[0].date).getDate() <= 7)
+        .append('text')
+        .attr('transform', (_,i) => 'translate(' + ( i * (cellSize + cellSpacing) + margin) + ', ' +margin + ')')
+        .attr('x', cellSize/2)
+        .style('text-anchor', 'middle')
+        .style('fill', '#000')
+        .text(d => d3TimeFormat.timeFormat('%b')(new Date(d[0].date)))
+
+
+      // hide axis lines and ticks
+      var axis = elmS.selectAll('.axis')
+      axis.style('shape-rendering', 'crispEdges');
+      axis.selectAll('path').style('display', 'none');
+      axis.selectAll('line').style('display', 'none');
+    
       if (transition === true) {
         week = week.transition(context);
         day = day.transition(context);
       }
 
-
-      week.attr('transform', (_,i) => 'translate(' + ( i * (cellSize + cellSpacing)) + ', 0)');
+      week.attr('transform', (_,i) => 'translate(' + ( i * (cellSize + cellSpacing) + margin+1) + ', ' + (margin+8) + ')');
       day.attr('width', cellSize)
           .attr('height', cellSize)
-          .attr('y', d => new Date(d.date).getDay() * (cellSize + cellSpacing))
+          .attr('y', d => new Date(d.date).getDay() * (cellSize + cellSpacing) )
           .style('fill', d => d.value ? quantize(d.value) : '#f2f2f2');
 
     });
@@ -128,9 +163,9 @@ export default function chart(id) {
     if(!arguments.length){
       return height;
     }
-    var suggestedHeight = 10 * cellSize * (1+spaceToSizeRatio);
+    var suggestedHeight = 8 * cellSize * (1+spaceToSizeRatio) + margin;
     if(suggestedHeight > _){
-        cellSize = height / (10 * (1+spaceToSizeRatio));
+        cellSize = (height-margin) / (8 * (1+spaceToSizeRatio));
         cellSpacing = cellSize * spaceToSizeRatio;
       }
     height = _;
