@@ -94,20 +94,22 @@
 
     'use strict';
     var points = [
-      [{date: '2016-05-01', value: 10},
+      {date: '2016-05-01', value: 10},
       {date: '2016-05-01', value: 20},
       {date: '2016-05-05', value: 5},
-      {date: '2016-06-02', value: 15}]
+      {date: '2016-06-02', value: 15}
     ];
 
     
-    var chart = d3_rs_calendar_chart.html().lastWeeks(12).width(400);
+    var chart = d3_rs_calendar_chart.html().lastWeeks(12);
 
     var textElm = d3.select('#elm')
-      .data(points)
+      .datum(points)
       .call(chart);
 
-  textElm.transition().delay(5000).call(chart.height(200));
+    textElm.transition().delay(1500).call(chart.lastWeeks(20));
+    textElm.transition().delay(3000).call(chart.lastWeeks(40).width(1200).colours('purple'));
+    textElm.transition().delay(4500).call(chart.width(400));
 
     </script>
   </body>

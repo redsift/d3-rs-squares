@@ -13,7 +13,7 @@ export default function chart(id) {
       dateIdFormat = d3.timeFormat('%Y%U'),
       dateDisplayFormat = d3.timeFormat('%d %b %Y'),
       weekId = d => dateIdFormat(new Date(d[0].date)),
-      width = 600,
+      width = 800,
       height = null,
       lastWeeks = 52,
       spaceToSizeRatio = 0.15,
