@@ -18,13 +18,14 @@ export default function chart(id) {
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
       // dateDisplayFormat = d3.timeFormat('%d %b %Y'),
       weekId = d => dateIdFormat(new Date(d[0].date)),
+      dayNum = d => new Date(d.date).getDay(),
+      translate = (x,y) => ['translate(',x,y,')'].join(' '),
       width = 800,
       height = null,
       lastWeeks = 52,
       spaceToSizeRatio = 0.15,
       scale = 1.0,
-      margin = 20,
-      cellSize = (width-2*margin) / ((lastWeeks+1) * (1+spaceToSizeRatio)),
+      cellSize = width / ((lastWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio,
       colours = defaultColours.green;
 
@@ -51,12 +52,12 @@ export default function chart(id) {
         transition = (context.selection !== undefined);
 
     selection.each(function(data) {
-      cellSize = (width - 2*margin) / ((lastWeeks+1) * (1+spaceToSizeRatio)),
+      cellSize = width / ((lastWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio;
-      var suggestedHeight = 8 * cellSize * (1+spaceToSizeRatio) + margin;
+      var suggestedHeight = 8 * cellSize * (1+spaceToSizeRatio);
       // check for the stricter constraint
       if(height && suggestedHeight > height){
-        cellSize = (height-margin) / (8 * (1+spaceToSizeRatio));
+        cellSize = height / (8 * (1+spaceToSizeRatio));
         cellSpacing = cellSize * spaceToSizeRatio;
       }else{
         height = suggestedHeight;
@@ -77,9 +78,8 @@ export default function chart(id) {
         .range(colours);
 
       data = fullCalendar(lastWeeks, data);
-      console.log(data);
-      var wS = elmS.selectAll('g').data(data, weekId);
-      var week = wS;
+
+      var week = elmS.selectAll('g').data(data, weekId);
       week.exit().remove();
       week = week.enter()
           .append('g')
@@ -99,31 +99,36 @@ export default function chart(id) {
             .style('fill', '#f2f2f2')
           .merge(day)
 
-      var xScale = d3.scaleTime()
-          .domain([new Date(data[1][0].date), new Date(data[1][6].date)])
-          .range([cellSize/2, 6.5* cellSize * (1+spaceToSizeRatio)]);
+      var weekNames = data[1]
+        .filter(d => dayNum(d)%2)
+        .map(d => ({
+          id: dayNum(d),
+          value:  d3TimeFormat.timeFormat('%a')(new Date(d.date))
+        }));
+      var weekDays = elmS.selectAll('.wday').data(weekNames)
+      weekDays.exit().transition().remove();
+      weekDays = weekDays.enter()
+          .append('text')
+          .attr('class','wday')
+        .merge(weekDays)
+          .attr('x', cellSize/2)
+          .style('line-height', cellSize)
+          .style('font-size', cellSize*0.6)
 
-      var dayAxis = d3.axisLeft()
-        .scale(xScale)
-        .ticks(3)
-        .tickFormat(d => d3TimeFormat.timeFormat('%a')(d)[0]);
-
-      elmS.append('g')
-        .attr("class", "day axis")
-        .attr('transform', 'translate('+ margin + ','+ (margin+8) +')')
-        .call(dayAxis);
-
-      var months = wS;
-      months.exit().remove();
-
+      var monthNames = data
+        .map((d,i) => ({order: i, date: d[0].date}))
+        .filter((d,i) => i>0 && new Date(d.date).getDate() <= 7);
+      var months = elmS.selectAll('.months').data(monthNames,d => d.date)
+      months.exit().transition().remove();
       months = months.enter()
-        .filter(d => new Date(d[0].date).getDate() <= 7)
         .append('text')
-        .attr('transform', (_,i) => 'translate(' + ( i * (cellSize + cellSpacing) + margin) + ', ' +margin + ')')
-        .attr('x', cellSize/2)
-        .style('text-anchor', 'middle')
-        .style('fill', '#000')
-        .text(d => d3TimeFormat.timeFormat('%b')(new Date(d[0].date)))
+          .attr('class', 'months')
+          .text(d => d3TimeFormat.timeFormat('%b')(new Date(d.date)))
+          .style('text-anchor', 'middle')
+          .style('fill', '#000')
+        .merge(months)
+          .style('line-height', cellSize)
+          .style('font-size', cellSize*0.5)
 
 
       // hide axis lines and ticks
@@ -135,13 +140,26 @@ export default function chart(id) {
       if (transition === true) {
         week = week.transition(context);
         day = day.transition(context);
+        months = months.transition(context);
+        weekDays = weekDays.transition(context);
       }
 
-      week.attr('transform', (_,i) => 'translate(' + ( i * (cellSize + cellSpacing) + margin+1) + ', ' + (margin+8) + ')');
+      week.attr('transform', (_,i) => translate( ++i * (cellSize + cellSpacing) , cellSize + 2*cellSpacing));
       day.attr('width', cellSize)
           .attr('height', cellSize)
           .attr('y', d => new Date(d.date).getDay() * (cellSize + cellSpacing) )
           .style('fill', d => d.value ? quantize(d.value) : '#f2f2f2');
+
+      months.attr('transform', d => translate( ++d.order * (cellSize + cellSpacing), cellSize ))
+        .attr('x', cellSize/2)
+        .style('line-height', cellSize)
+        .style('font-size', cellSize*0.5)
+
+      weekDays.attr('y', d => (d.id+2) * cellSize + d.id*cellSpacing*0.9 )
+          .attr('x', cellSize/2)
+          .style('line-height', cellSize)
+          .style('font-size', cellSize*0.6)
+          .text(d => d.value[0])
 
     });
   }
@@ -163,9 +181,9 @@ export default function chart(id) {
     if(!arguments.length){
       return height;
     }
-    var suggestedHeight = 8 * cellSize * (1+spaceToSizeRatio) + margin;
+    var suggestedHeight = 8 * cellSize * (1+spaceToSizeRatio);
     if(suggestedHeight > _){
-        cellSize = (height-margin) / (8 * (1+spaceToSizeRatio));
+        cellSize = height / (8 * (1+spaceToSizeRatio));
         cellSpacing = cellSize * spaceToSizeRatio;
       }
     height = _;
