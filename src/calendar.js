@@ -22,34 +22,41 @@ export default function chart(id) {
       translate = (x,y) => ['translate(',x,y,')'].join(' '),
       width = 800,
       height = null,
-      lastWeeks = 52,
+      lastWeeks = 0,
+      nextWeeks = 0,
       spaceToSizeRatio = 0.15,
       scale = 1.0,
-      future = false,
-      cellSize = width / ((lastWeeks+2) * (1+spaceToSizeRatio)),
+      cellSize = width / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio,
       colours = defaultColours.green;
 
-  function fullCalendar(w, data, future){
+  function fullCalendar(lw, nw, data){
     var today = Date.now();
     var dataByDate = nest()
       .key(d => dateFormat(new Date(d.date)))
       .rollup(d => sum(d, g => +g.value))
       .map(data);
 
-    var sunNum = d => d ? today : timeWeek.offset(today, (future ? w+1 : -w-1));
+    var sunNumB = lw > 0 ? timeWeek.offset(today, -lw-1) : today;
+    var sunNumE = nw > 0 ? timeWeek.offset(today, nw) : today;
     var timeDaysPast = s => timeDays(
-      Math.max(timeSunday.offset(today, -w), s),
+      Math.max(timeSunday.offset(today, -lw), s),
       Math.min(today, timeWeek.offset(s, 1)));
     var timeDaysFuture = s => timeDays(
       Math.max(timeDay.offset(today, -1), timeWeek.offset(s, -1)),
-      Math.min(timeSunday.offset(timeDay.offset(today, -1), w), s));
-    var timeSide = d => d ? timeDaysFuture : timeDaysPast;
+      Math.min(timeSunday.offset(timeDay.offset(today, -1), nw), s));
+    var timeDaysBoth = s => timeDays(
+      Math.max(timeSunday.offset(timeDay.offset(today, -1), -lw), s),
+      Math.min(timeSunday.offset(today, nw), timeWeek.offset(s, 1)));
+    var timeSide = (lw > 0 && nw > 0) ? timeDaysBoth :
+                                (lw > 0) ? timeDaysPast :
+                                  (nw > 0) ? timeDaysFuture :
+                                    timeDays(today,today);
 
-    return timeSundays(sunNum(future), sunNum(!future))
+
+    return timeSundays(sunNumB, sunNumE)
         .map(sunday =>
-          timeSide(future)(sunday)
-          .map(d => ({
+          timeSide(sunday).map(d => ({
               date: dateFormat(d),
               value: dataByDate.get(dateFormat(d)) || 0
             }))
@@ -57,11 +64,15 @@ export default function chart(id) {
   }
 
   function _impl(context) {
+    if(lastWeeks === 0 && nextWeeks === 0){
+      console.error('No sensible range of weeks was defined');
+      return;
+    }
     var selection = context.selection ? context.selection() : context,
         transition = (context.selection !== undefined);
 
     selection.each(function(data) {
-      cellSize = width / ((lastWeeks+2) * (1+spaceToSizeRatio)),
+      cellSize = width / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio;
       var suggestedHeight = 8 * cellSize * (1+spaceToSizeRatio);
       // check for the stricter constraint
@@ -86,7 +97,7 @@ export default function chart(id) {
         .domain(extent(data, d => d.value))
         .range(colours);
 
-      data = fullCalendar(lastWeeks, data, future);
+      data = fullCalendar(lastWeeks, nextWeeks, data);
 
       var week = elmS.selectAll('g').data(data, weekId);
       week.exit().remove();
@@ -208,8 +219,8 @@ export default function chart(id) {
     return arguments.length ? (lastWeeks = _, _impl) : lastWeeks;
   };
 
-  _impl.future = function(_) {
-    return arguments.length ? (future = _, _impl) : future;
+  _impl.nextWeeks = function(_) {
+    return arguments.length ? (nextWeeks = _, _impl) : nextWeeks;
   };
 
   _impl.colours = function(_) {
