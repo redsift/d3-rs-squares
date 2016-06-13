@@ -109,30 +109,25 @@ export default function chart(id) {
       day.exit().transition()
         .attr('width', 0)
         .attr('height', 0)
-        .attr('y', d => new Date(d.date).getDay() * (cellSize + cellSpacing))
+        .attr('y', d => dayNum(d) * (cellSize + cellSpacing))
         .remove();
       day = day.enter()
           .append('rect')
             .attr('class', 'day')
             .attr('data-date', d => dateFormat(new Date(d.date)))
             .style('fill', '#f2f2f2')
-          .merge(day)
+          .merge(day);
 
-      var weekNames = data[1]
-        .filter(d => dayNum(d)%2)
-        .map(d => ({
-          id: dayNum(d),
-          value:  d3TimeFormat.timeFormat('%a')(new Date(d.date))
-        }));
-      var weekDays = elmS.selectAll('.wday').data(weekNames)
+      var weekDays = elmS.selectAll('.wday').data(data[1])
       weekDays.exit().transition().remove();
       weekDays = weekDays.enter()
           .append('text')
           .attr('class','wday')
+          .style('text-anchor', 'middle')
         .merge(weekDays)
           .attr('x', cellSize/2)
           .style('line-height', cellSize)
-          .style('font-size', cellSize*0.6)
+          .style('font-size', cellSize*0.6);
 
       var monthNames = data
         .map((d,i) => ({order: i, date: d[0].date}))
@@ -147,7 +142,7 @@ export default function chart(id) {
           .style('fill', '#000')
         .merge(months)
           .style('line-height', cellSize)
-          .style('font-size', cellSize*0.5)
+          .style('font-size', cellSize*0.5);
 
 
       // hide axis lines and ticks
@@ -166,19 +161,21 @@ export default function chart(id) {
       week.attr('transform', (_,i) => translate( ++i * (cellSize + cellSpacing) , cellSize + 2*cellSpacing));
       day.attr('width', cellSize)
           .attr('height', cellSize)
-          .attr('y', d => new Date(d.date).getDay() * (cellSize + cellSpacing) )
-          .style('fill', d => d.value ? quantize(d.value) : '#f2f2f2');
+          .attr('y', d => dayNum(d) * (cellSize + cellSpacing) )
+          .style('fill', d => d.value ? quantize(d.value) : '#f2f2f2')
 
       months.attr('transform', d => translate( ++d.order * (cellSize + cellSpacing), cellSize ))
         .attr('x', cellSize/2)
         .style('line-height', cellSize)
-        .style('font-size', cellSize*0.5)
+        .style('font-size', cellSize*0.5);
 
-      weekDays.attr('y', d => (d.id+2) * cellSize + d.id*cellSpacing*0.9 )
+      weekDays.attr('transform', translate( 0 , 2*cellSize))
+          .attr('y', d => dayNum(d) * (cellSize + cellSpacing) )
           .attr('x', cellSize/2)
           .style('line-height', cellSize)
           .style('font-size', cellSize*0.6)
-          .text(d => d.value[0])
+          .text(d => d3TimeFormat.timeFormat('%a')(new Date(d.date))[0])
+          .style('display', d => dayNum(d)%2 ? '' : 'none');
 
     });
   }
