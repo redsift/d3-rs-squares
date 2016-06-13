@@ -5,7 +5,7 @@ var tape = require("@redsift/tape-reel")("<div id='test'></div>");
 tape("html() generates and updates svg", function(t) {
     var data = [];
     
-    var host = calendar.html();
+    var host = calendar.html().lastWeeks(50);
     var el = d3.select('#test').datum(data);
     
     // el.call(host);
