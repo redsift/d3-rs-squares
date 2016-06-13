@@ -144,12 +144,6 @@ export default function chart(id) {
           .style('line-height', cellSize)
           .style('font-size', cellSize*0.5);
 
-
-      // hide axis lines and ticks
-      var axis = elmS.selectAll('.axis')
-      axis.style('shape-rendering', 'crispEdges');
-      axis.selectAll('path').style('display', 'none');
-      axis.selectAll('line').style('display', 'none');
     
       if (transition === true) {
         week = week.transition(context);
