@@ -1,6 +1,6 @@
 {
   "name": "@redsift/d3-rs-calendar-chart",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Generates a calendar chart using D3v4.",
   "keywords": [
     "redsift",
