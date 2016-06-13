@@ -49,9 +49,9 @@ export default function chart(id) {
       Math.max(timeSunday.offset(timeDay.offset(today, -1), -lw), s),
       Math.min(timeSunday.offset(today, nw), timeWeek.offset(s, 1)));
     var timeSide = (lw > 0 && nw > 0) ? timeDaysBoth :
-                                (lw > 0) ? timeDaysPast :
-                                  (nw > 0) ? timeDaysFuture :
-                                    timeDays(today,today);
+                    (lw > 0) ? timeDaysPast :
+                      (nw > 0) ? timeDaysFuture :
+                        timeDays(today,today);
 
 
     return timeSundays(sunNumB, sunNumE)
