@@ -193,7 +193,7 @@ export default function chart(id) {
   };
 
   _impl.width = function(_) {
-    return arguments.length ? (width = _, _impl) : width;
+    return arguments.length ? (width = +_, _impl) : width;
   };
 
   _impl.height = function(_) {
@@ -201,11 +201,11 @@ export default function chart(id) {
       return height;
     }
     var suggestedHeight = 8 * cellSize * (1+spaceToSizeRatio);
-    if(suggestedHeight > _){
+    if(suggestedHeight > +_){
         cellSize = height / (8 * (1+spaceToSizeRatio));
         cellSpacing = cellSize * spaceToSizeRatio;
       }
-    height = _;
+    height = +_;
 
     return _impl
   };
@@ -215,11 +215,11 @@ export default function chart(id) {
   }; 
 
   _impl.lastWeeks = function(_) {
-    return arguments.length ? (lastWeeks = _, _impl) : lastWeeks;
+    return arguments.length ? (lastWeeks = +_, _impl) : lastWeeks;
   };
 
   _impl.nextWeeks = function(_) {
-    return arguments.length ? (nextWeeks = _, _impl) : nextWeeks;
+    return arguments.length ? (nextWeeks = +_, _impl) : nextWeeks;
   };
 
   _impl.colours = function(_) {
