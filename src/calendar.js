@@ -2,7 +2,7 @@ import { select } from 'd3-selection';
 import * as d3TimeFormat from 'd3-time-format';
 import { sum, extent } from 'd3-array';
 import { nest} from 'd3-collection';
-import { timeSunday, timeSundays, timeDays, timeWeek} from 'd3-time';
+import { timeSunday, timeSundays, timeDays, timeWeek, timeDay} from 'd3-time';
 import { scaleQuantize } from 'd3-scale';
 import { html as svg } from '@redsift/d3-rs-svg';
 
@@ -25,22 +25,31 @@ export default function chart(id) {
       lastWeeks = 52,
       spaceToSizeRatio = 0.15,
       scale = 1.0,
+      future = false,
       cellSize = width / ((lastWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio,
       colours = defaultColours.green;
 
-  function fullCalendar(w, data){
+  function fullCalendar(w, data, future){
     var today = Date.now();
     var dataByDate = nest()
       .key(d => dateFormat(new Date(d.date)))
       .rollup(d => sum(d, g => +g.value))
       .map(data);
 
-    return timeSundays(timeWeek.offset(today, -w-1), today)
-        .map(sunday => timeDays(
-            Math.max(timeSunday.offset(today, -w), sunday),
-            Math.min(today, timeWeek.offset(sunday, 1))
-          ).map(d => ({
+    var sunNum = d => d ? today : timeWeek.offset(today, (future ? w+1 : -w-1));
+    var timeDaysPast = s => timeDays(
+      Math.max(timeSunday.offset(today, -w), s),
+      Math.min(today, timeWeek.offset(s, 1)));
+    var timeDaysFuture = s => timeDays(
+      Math.max(timeDay.offset(today, -1), timeWeek.offset(s, -1)),
+      Math.min(timeSunday.offset(timeDay.offset(today, -1), w), s));
+    var timeSide = d => d ? timeDaysFuture : timeDaysPast;
+
+    return timeSundays(sunNum(future), sunNum(!future))
+        .map(sunday =>
+          timeSide(future)(sunday)
+          .map(d => ({
               date: dateFormat(d),
               value: dataByDate.get(dateFormat(d)) || 0
             }))
@@ -77,7 +86,7 @@ export default function chart(id) {
         .domain(extent(data, d => d.value))
         .range(colours);
 
-      data = fullCalendar(lastWeeks, data);
+      data = fullCalendar(lastWeeks, data, future);
 
       var week = elmS.selectAll('g').data(data, weekId);
       week.exit().remove();
@@ -197,6 +206,10 @@ export default function chart(id) {
 
   _impl.lastWeeks = function(_) {
     return arguments.length ? (lastWeeks = _, _impl) : lastWeeks;
+  };
+
+  _impl.future = function(_) {
+    return arguments.length ? (future = _, _impl) : future;
   };
 
   _impl.colours = function(_) {
