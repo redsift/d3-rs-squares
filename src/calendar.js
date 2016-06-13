@@ -65,7 +65,6 @@ export default function chart(id) {
 
   function _impl(context) {
     if(lastWeeks === 0 && nextWeeks === 0){
-      console.error('No sensible range of weeks was defined');
       return;
     }
     var selection = context.selection ? context.selection() : context,
