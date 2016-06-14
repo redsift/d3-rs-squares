@@ -20,7 +20,6 @@ export default function chart(id) {
   var classed = 'calendar-chart',
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
-      // dateDisplayFormat = d3.timeFormat('%d %b %Y'),
       weekId = d => dateIdFormat(new Date(d[0].date)),
       dayNum = d => new Date(d.date).getDay(),
       translate = (x,y) => ['translate(',x,y,')'].join(' '),
@@ -97,7 +96,7 @@ export default function chart(id) {
       var elmS = node.select(root.child());
       var rtip = tip()
         .attr('class', 'd3-tip')
-        .html(d => d3.timeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value + ' email(s)')
+        .html(d => d3TimeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value + ' email(s)')
       elmS.call(rtip);
 
       var quantize = scaleQuantize()
