@@ -8,6 +8,7 @@ import { nest} from 'd3-collection';
 import { timeSunday, timeSundays, timeDays, timeWeek, timeDay} from 'd3-time';
 import { scaleQuantize } from 'd3-scale';
 import { html as svg } from '@redsift/d3-rs-svg';
+import { tip } from '@redsift/d3-rs-tip';
 
 export default function chart(id) {
   var defaultColours = {
@@ -94,7 +95,11 @@ export default function chart(id) {
       tnode.call(root);
 
       var elmS = node.select(root.child());
-      
+      var rtip = tip()
+        .attr('class', 'd3-tip')
+        .html(d => d3.timeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value + ' email(s)')
+      elmS.call(rtip);
+
       var quantize = scaleQuantize()
         .domain(extent(data, d => d.value))
         .range(colours);
@@ -160,6 +165,8 @@ export default function chart(id) {
           .attr('height', cellSize)
           .attr('y', d => dayNum(d) * (cellSize + cellSpacing) )
           .style('fill', d => d.value ? quantize(d.value) : '#f2f2f2')
+          .on('mouseover', rtip.show)
+          .on('mouseout', rtip.hide)
 
       months.attr('transform', d => translate( ++d.order * (cellSize + cellSpacing), cellSize ))
         .attr('x', cellSize/2)

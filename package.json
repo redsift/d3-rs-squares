@@ -20,8 +20,8 @@
     "url": "https://github.com/redsift/d3-rs-calendar-chart.git"
   },
   "scripts": {
-    "serve": "gulp -o d3-rs-calendar-chart -g d3-selection -g d3-time-format -g d3-array -g d3-collection -g d3-time -g d3-scale -g @redsift/d3-rs-svg serve",
-    "build": "gulp -o d3-rs-calendar-chart -g d3-selection -g d3-time-format -g d3-array -g d3-collection -g d3-time -g d3-scale -g @redsift/d3-rs-svg build",
+    "serve": "gulp -o d3-rs-calendar-chart -g d3-selection -g d3-time-format -g d3-array -g d3-collection -g d3-time -g d3-scale -g @redsift/d3-rs-svg -g @redsift/d3-rs-tip serve",
+    "build": "gulp -o d3-rs-calendar-chart -g d3-selection -g d3-time-format -g d3-array -g d3-collection -g d3-time -g d3-scale -g @redsift/d3-rs-svg -g @redsift/d3-rs-tip build",
     "pretest": "npm outdated && npm run build",
     "test": "tape 'test/**/*-test.js' && eslint index.js src",
     "version": "json2module package.json > package.js",
@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@redsift/d3-rs-svg": "~0.2.3",
+    "@redsift/d3-rs-tip": "~0.2.0",
     "d3-array": "^0.8.1",
     "d3-collection": "^0.3.1",
     "d3-scale": "^0.9.0",
