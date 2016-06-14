@@ -38,7 +38,7 @@ export default function chart(id) {
       .map(data);
 
     var sunNumB = lw > 0 ? timeWeek.offset(today, -lw-1) : today;
-    var sunNumE = nw > 0 ? timeWeek.offset(today, nw) : today;
+    var sunNumE = nw > 0 ? timeWeek.offset(today, lw > 0 ? nw : nw+1) : today;
     var timeDaysPast = s => timeDays(
       Math.max(timeSunday.offset(today, -lw), s),
       Math.min(today, timeWeek.offset(s, 1)));
