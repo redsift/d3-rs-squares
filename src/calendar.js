@@ -1,3 +1,6 @@
+/**
+ * Copyright (c) 2016Redsift Limited. All rights reserved.
+*/
 import { select } from 'd3-selection';
 import * as d3TimeFormat from 'd3-time-format';
 import { sum, extent } from 'd3-array';
