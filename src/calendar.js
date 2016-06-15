@@ -8,7 +8,6 @@ import { nest} from 'd3-collection';
 import { timeSunday, timeSundays, timeDays, timeWeek, timeDay} from 'd3-time';
 import { scaleQuantize } from 'd3-scale';
 import { html as svg } from '@redsift/d3-rs-svg';
-import { tip } from '@redsift/d3-rs-tip';
 
 export default function chart(id) {
   var defaultColours = {
