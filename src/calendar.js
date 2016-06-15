@@ -31,8 +31,7 @@ export default function chart(id) {
       scale = 1.0,
       cellSize = width / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio,
-      colours = defaultColours.green,
-      tipHtml = (d) => d3TimeFormat.timeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value;
+      colours = defaultColours.green;
 
   function fullCalendar(lw, nw, data){
     var today = Date.now();
@@ -95,10 +94,6 @@ export default function chart(id) {
       tnode.call(root);
 
       var elmS = node.select(root.child());
-      var rtip = tip()
-        .attr('class', 'd3-tip')
-        .html(tipHtml)
-      elmS.call(rtip);
 
       var quantize = scaleQuantize()
         .domain(extent(data, d => d.value))
@@ -164,9 +159,7 @@ export default function chart(id) {
       day.attr('width', cellSize)
           .attr('height', cellSize)
           .attr('y', d => dayNum(d) * (cellSize + cellSpacing) )
-          .style('fill', d => d.value ? quantize(d.value) : '#f2f2f2')
-          .on('mouseover', rtip.show)
-          .on('mouseout', rtip.hide)
+          .style('fill', d => d.value ? quantize(d.value) : '#f2f2f2');
 
       months.attr('transform', d => translate( ++d.order * (cellSize + cellSpacing), cellSize ))
         .attr('x', cellSize/2)
@@ -222,10 +215,6 @@ export default function chart(id) {
   _impl.nextWeeks = function(_) {
     return arguments.length ? (nextWeeks = +_, _impl) : nextWeeks;
   };
-
-  _impl.tipHtml = function(_) {
-    return arguments.length ? (tipHtml = _, _impl) : tipHtml;
-  }
 
   _impl.colours = function(_) {
     if(!arguments.length){

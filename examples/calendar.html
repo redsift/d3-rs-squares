@@ -72,9 +72,19 @@
     
     var chart = d3_rs_calendar_chart.html().lastWeeks(12);
 
+    var rstip = d3_rs_tip.tip()
+        .attr('class', 'd3-tip')
+        .direction('n')
+        .html((d) => d3.timeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value);
+
     var chartElm = d3.select('#elm')
       .datum(points)
       .call(chart);
+
+    d3.select('svg').call(rstip);
+    d3.selectAll('.day')
+      .on('mouseover', rstip.show)
+      .on('mouseout', rstip.hide)
 
     // chartElm.transition().delay(1500).call(chart.lastWeeks(20));
     // chartElm.transition().delay(3000).call(chart.lastWeeks(40).width(1200).colours('purple'));
