@@ -31,7 +31,8 @@ export default function chart(id) {
       scale = 1.0,
       cellSize = width / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio,
-      colours = defaultColours.green;
+      colours = defaultColours.green,
+      tipHtml = (d) => d3TimeFormat.timeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value;
 
   function fullCalendar(lw, nw, data){
     var today = Date.now();
@@ -96,7 +97,7 @@ export default function chart(id) {
       var elmS = node.select(root.child());
       var rtip = tip()
         .attr('class', 'd3-tip')
-        .html(d => d3TimeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value + ' email(s)')
+        .html(tipHtml)
       elmS.call(rtip);
 
       var quantize = scaleQuantize()
@@ -221,6 +222,10 @@ export default function chart(id) {
   _impl.nextWeeks = function(_) {
     return arguments.length ? (nextWeeks = +_, _impl) : nextWeeks;
   };
+
+  _impl.tipHtml = function(_) {
+    return arguments.length ? (tipHtml = _, _impl) : tipHtml;
+  }
 
   _impl.colours = function(_) {
     if(!arguments.length){
