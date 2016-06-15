@@ -39,5 +39,8 @@
 |classed|SVG custom class|N|
 |width| Width of the calendar| Y|
 |height| Height of the calendar| Y|
+|scale | Scale of the calendar | Y|
 |lastWeeks| Number of weeks in the past from now| Y|
+|nextWeeks| Number of weeks in the future from now | Y |
 |colours| Colour palette for the data. Expected values `green\|blue\|purple`, or an array of RGB values e.g. `['#b0e288', ... ]` preferably length >= 5 | Y|
+|tipHtml| d3 style function for the text of the tip| N|
