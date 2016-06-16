@@ -20,8 +20,8 @@
     "url": "https://github.com/redsift/d3-rs-calendar-chart.git"
   },
   "scripts": {
-    "serve": "gulp -o d3-rs-calendar-chart -g d3-selection -g d3-time-format -g d3-array -g d3-collection -g d3-time -g d3-scale -g @redsift/d3-rs-svg serve",
-    "build": "gulp -o d3-rs-calendar-chart -g d3-selection -g d3-time-format -g d3-array -g d3-collection -g d3-time -g d3-scale -g @redsift/d3-rs-svg build",
+    "serve": "gulp -o d3-rs-calendar-chart serve",
+    "build": "gulp -o d3-rs-calendar-chart build",
     "pretest": "npm outdated && npm run build",
     "test": "tape 'test/**/*-test.js' && eslint index.js src",
     "version": "json2module package.json > package.js",
@@ -50,8 +50,9 @@
     "gulp-util": "^3.0.7",
     "json2module": "~0.0.3",
     "rollup": "^0.26",
-    "rollup-plugin-babel": "^2.5.1",
-    "rollup-plugin-includepaths": "^0.1.2",
+    "rollup-plugin-buble": "^0.11.0",
+    "rollup-plugin-commonjs": "^3.0.0",
+    "rollup-plugin-node-resolve": "^1.7.0",
     "rollup-stream": "^1.6.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",

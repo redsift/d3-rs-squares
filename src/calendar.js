@@ -108,7 +108,7 @@ export default function chart(id) {
         .merge(week);
 
       var day = week.selectAll('.day').data((d) => d)
-      day.exit().transition()
+      day.exit()
         .attr('width', 0)
         .attr('height', 0)
         .attr('y', d => dayNum(d) * (cellSize + cellSpacing))
@@ -121,7 +121,7 @@ export default function chart(id) {
           .merge(day);
 
       var weekDays = elmS.selectAll('.wday').data(data[1])
-      weekDays.exit().transition().remove();
+      weekDays.exit().remove();
       weekDays = weekDays.enter()
           .append('text')
           .attr('class','wday')
@@ -135,7 +135,7 @@ export default function chart(id) {
         .map((d,i) => ({order: i, date: d[0].date}))
         .filter((d,i) => i>0 && new Date(d.date).getDate() <= 7);
       var months = elmS.selectAll('.months').data(monthNames,d => d.date)
-      months.exit().transition().remove();
+      months.exit().remove();
       months = months.enter()
         .append('text')
           .attr('class', 'months')
