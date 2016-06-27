@@ -1,5 +1,5 @@
 export var name = "@redsift/d3-rs-calendar-chart";
-export var version = "0.3.6";
+export var version = "0.3.7";
 export var description = "Generates a calendar chart using D3v4.";
 export var keywords = ["redsift","d3","calendar","chart"];
 export var homepage = "https://github.com/redsift/d3-rs-calendar-chart";
