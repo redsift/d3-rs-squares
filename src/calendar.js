@@ -73,6 +73,7 @@ export default function chart(id) {
         transition = (context.selection !== undefined);
 
     selection.each(function(data) {
+      data = data || [];
       cellSize = width / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio;
       var suggestedHeight = 8 * cellSize * (1+spaceToSizeRatio);
