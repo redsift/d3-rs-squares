@@ -67,7 +67,7 @@ export default function chart(id) {
 
   function _impl(context) {
     if(lastWeeks === 0 && nextWeeks === 0){
-      return;
+      lastWeeks = 12;
     }
     var selection = context.selection ? context.selection() : context,
         transition = (context.selection !== undefined);
