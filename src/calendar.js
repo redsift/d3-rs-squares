@@ -46,7 +46,7 @@ export default function chart(id) {
       Math.min(today, timeWeek.offset(s, 1)));
     var timeDaysFuture = s => timeDays(
       Math.max(timeDay.offset(today, -1), timeWeek.offset(s, -1)),
-      Math.min(timeSunday.offset(timeDay.offset(today, -1), nw), s));
+      Math.min(timeWeek.offset(today, nw), s));
     var timeDaysBoth = s => timeDays(
       Math.max(timeSunday.offset(timeDay.offset(today, -1), -lw), s),
       Math.min(timeSunday.offset(today, nw), timeWeek.offset(s, 1)));
