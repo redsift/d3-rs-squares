@@ -131,33 +131,33 @@ export default function chart(id) {
 
       data = fullCalendar(lastWeeks, nextWeeks, data);
 
-      var week = elmS.selectAll('g').data(data, weekId);
-      week.exit().remove();
-      week = week.enter()
+      var column = elmS.selectAll('g').data(data, weekId);
+      column.exit().remove();
+      column = column.enter()
           .append('g')
           .attr('id', weekId)
-        .merge(week);
+        .merge(column);
 
-      var day = week.selectAll('.day').data((d) => d)
-      day.exit()
+      var square = column.selectAll('.day').data((d) => d)
+      square.exit()
         .attr('width', 0)
         .attr('height', 0)
-        .attr('y', (d,i) => isCalendar ? dayNum(d) : i * (cellSize + cellSpacing))
+        .attr('y', (d,i) => (isCalendar ? dayNum(d) : i) * (cellSize + cellSpacing))
         .remove();
-      day = day.enter()
+      square = square.enter()
           .append('rect')
             .attr('class', 'day')
             .attr('data-date', d => dateFormat(new Date(d.date)))
             .style('fill', '#f2f2f2')
-          .merge(day);
+          .merge(square);
 
-      var weekDays = elmS.selectAll('.wday').data(data[1])
-      weekDays.exit().remove();
-      weekDays = weekDays.enter()
+      var yAxis = elmS.selectAll('.wday').data(data[1])
+      yAxis.exit().remove();
+      yAxis = yAxis.enter()
           .append('text')
           .attr('class','wday')
           .style('text-anchor', 'middle')
-        .merge(weekDays)
+        .merge(yAxis)
           .attr('x', cellSize/2)
           .style('line-height', cellSize)
           .style('font-size', cellSize*0.6);
@@ -165,38 +165,38 @@ export default function chart(id) {
       var monthNames = data
         .map((d,i) => ({order: i, date: d[0].date}))
         .filter((d,i) => i>0 && new Date(d.date).getDate() <= 7);
-      var months = elmS.selectAll('.months').data(monthNames,d => d.date)
-      months.exit().remove();
-      months = months.enter()
+      var xAxis = elmS.selectAll('.months').data(monthNames,d => d.date)
+      xAxis.exit().remove();
+      xAxis = xAxis.enter()
         .append('text')
           .attr('class', 'months')
           .text(d => d3TimeFormat.timeFormat('%b')(new Date(d.date)))
           .style('text-anchor', 'middle')
           .style('fill', '#000')
-        .merge(months)
+        .merge(xAxis)
           .style('line-height', cellSize)
           .style('font-size', cellSize*0.5);
 
     
       if (transition === true) {
-        week = week.transition(context);
-        day = day.transition(context);
-        months = months.transition(context);
-        weekDays = weekDays.transition(context);
+        column = column.transition(context);
+        square = square.transition(context);
+        xAxis = xAxis.transition(context);
+        yAxis = yAxis.transition(context);
       }
 
-      week.attr('transform', (_,i) => translate( ++i * (cellSize + cellSpacing) , cellSize + 2*cellSpacing));
-      day.attr('width', cellSize)
+      column.attr('transform', (_,i) => translate( ++i * (cellSize + cellSpacing) , cellSize + 2*cellSpacing));
+      square.attr('width', cellSize)
           .attr('height', cellSize)
-          .attr('y', d => dayNum(d) * (cellSize + cellSpacing) )
+          .attr('y', (d,i) => (isCalendar ? dayNum(d) : i) * (cellSize + cellSpacing))
           .style('fill', d => d.value ? quantize(d.value) : '#f2f2f2');
 
-      months.attr('transform', d => translate( ++d.order * (cellSize + cellSpacing), cellSize ))
+      xAxis.attr('transform', d => translate( ++d.order * (cellSize + cellSpacing), cellSize ))
         .attr('x', cellSize/2)
         .style('line-height', cellSize)
         .style('font-size', cellSize*0.5);
 
-      weekDays.attr('transform', translate( 0 , 2*cellSize))
+      yAxis.attr('transform', translate( 0 , 2*cellSize))
           .attr('y', d => dayNum(d) * (cellSize + cellSpacing) )
           .attr('x', cellSize/2)
           .style('line-height', cellSize)
@@ -227,10 +227,6 @@ export default function chart(id) {
                   ${_impl.self()} g.axis-i line, 
                   ${_impl.self()} g.axis-i path { 
                                               stroke: ${axisDisplayIndex === true ? display[theme].axis : 'none'}; 
-                                            }
-                  ${_impl.self()} g.axis-v-minor line,
-                  ${_impl.self()} g.axis-i-minor line { 
-                                              stroke: ${display[theme].axis}; 
                                             }
                                               
                   ${_impl.self()} text { 
