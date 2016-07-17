@@ -11,18 +11,9 @@ import { html as svg } from '@redsift/d3-rs-svg';
 import { 
   presentation10,
   display,
-  patterns,
-  diagonals,
-  fontImportVariable,
-  fontImportFixed,
-  fontFamilyVariableWidth,
-  fontFamilyFixedWidth,
-  fontSizeForWidth,
-  fontWeightMonochrome,
-  dataWidth,
-  gridWidth,
-  gridDash,
-  axisWidth
+  fonts,
+  widths,
+  dashes
 } from '@redsift/d3-rs-theme';
 
 const DEFAULT_ASPECT = 160 / 420;
@@ -217,10 +208,57 @@ export default function chart(id) {
   }
   _impl.self = function() { return 'g' + (id ?  '#' + id : '.' + classed); }
 
-  _impl.id = function() {
-    return id;
-  };
-    
+  _impl.id = function() { return id; };
+  
+  _impl.defaultStyle = () => `
+                  ${fontImportVariable}
+                  ${fontImportFixed}  
+                  ${_impl.self()} .axis line, 
+                  ${_impl.self()} .axis path { 
+                                              shape-rendering: crispEdges; 
+                                              stroke-width: ${widths.axis}; 
+                                              stroke: none;
+                                            }
+                  ${_impl.self()} g.axis-v line, 
+                  ${_impl.self()} g.axis-v path { 
+                                              stroke: ${axisDisplayValue === true ? display[theme].axis : 'none'}; 
+                                            }
+                                            
+                  ${_impl.self()} g.axis-i line, 
+                  ${_impl.self()} g.axis-i path { 
+                                              stroke: ${axisDisplayIndex === true ? display[theme].axis : 'none'}; 
+                                            }
+                  ${_impl.self()} g.axis-v-minor line,
+                  ${_impl.self()} g.axis-i-minor line { 
+                                              stroke: ${display[theme].axis}; 
+                                            }
+                                              
+                  ${_impl.self()} text { 
+                                        font-family: ${fonts.variable.family};
+                                        font-size: ${fonts.variable.sizeForWidth(width)};
+                                        font-weight: ${fonts.variable.weightMonochrome}; 
+                                        fill: ${display[theme].text}; 
+                                      }
+                   
+                  ${_impl.self()} path.stroke { stroke-width: ${widths.data} }
+                  
+                  ${_impl.self()} g.axis-v line.grid,
+                  ${_impl.self()} g.axis-i line.grid { 
+                                             stroke-width: ${widths.grid}; 
+                                             stroke-dasharray: ${dashes.grid};
+                                             stroke: ${display[theme].grid};
+                                            }
+                  ${_impl.self()} g.axis-i g.tick line.grid.first,
+                  ${_impl.self()} g.axis-v g.tick line.grid.first {
+                                              stroke: none;
+                                            }
+                                            
+                  ${_impl.self()} .axis text, 
+                  ${_impl.self()} g.highlight text { 
+                                   font-family: ${fonts.fixed.family} 
+                                  }
+                `;
+
   _impl.classed = function(_) {
     return arguments.length ? (classed = _, _impl) : classed;
   };
