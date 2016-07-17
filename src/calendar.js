@@ -17,6 +17,7 @@ import {
 } from '@redsift/d3-rs-theme';
 
 const DEFAULT_ASPECT = 160 / 420;
+const EMPTY_COLOR = '#f2f2f2';
 
 
 export default function chart(id) {
@@ -149,7 +150,7 @@ export default function chart(id) {
           .append('rect')
             .attr('class', 'day')
             .attr('data-date', d => dateFormat(new Date(d.date)))
-            .style('fill', '#f2f2f2')
+            .style('fill', EMPTY_COLOR)
           .merge(square);
 
       var oneWeek = (starting) => timeDays(starting.offset(starting(Date.now()), -1), starting(Date.now()))
@@ -192,7 +193,7 @@ export default function chart(id) {
       square.attr('width', cellSize)
           .attr('height', cellSize)
           .attr('y', (d,i) => (isCalendar ? dayNum(d.date) : i) * (cellSize + cellSpacing))
-          .style('fill', d => d.value ? quantize(d.value) : '#f2f2f2');
+          .style('fill', d => d.value ? quantize(d.value) : EMPTY_COLOR);
 
       xAxis.attr('transform', d => translate( ++d.order * (cellSize + cellSpacing), cellSize ))
         .attr('x', cellSize/2)
