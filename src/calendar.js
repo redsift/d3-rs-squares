@@ -28,6 +28,7 @@ export default function chart(id) {
       nextWeeks = 0,
       spaceToSizeRatio = 0.15,
       scale = 1.0,
+      calendarColumn = 8,
       cellSize = width / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio,
       colours = defaultColours.green;
@@ -65,6 +66,17 @@ export default function chart(id) {
       );
   }
 
+  function heightCalc(overide){
+    var suggestedHeight = calendarColumn * cellSize * (1+spaceToSizeRatio);
+    // check for the stricter constraint
+    if(height && suggestedHeight > height){
+      cellSize = height / (calendarColumn * (1+spaceToSizeRatio));
+      cellSpacing = cellSize * spaceToSizeRatio;
+    }else{
+      height = +overide || suggestedHeight;
+    }
+  }
+
   function _impl(context) {
     if(lastWeeks === 0 && nextWeeks === 0){
       lastWeeks = 12;
@@ -76,14 +88,7 @@ export default function chart(id) {
       data = data || [];
       cellSize = width / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio;
-      var suggestedHeight = 8 * cellSize * (1+spaceToSizeRatio);
-      // check for the stricter constraint
-      if(height && suggestedHeight > height){
-        cellSize = height / (8 * (1+spaceToSizeRatio));
-        cellSpacing = cellSize * spaceToSizeRatio;
-      }else{
-        height = suggestedHeight;
-      }
+      heightCalc();
 
       var node = select(this); 
       var root = svg().width(width).height(height).scale(scale).margin(0);
@@ -194,12 +199,7 @@ export default function chart(id) {
     if(!arguments.length){
       return height;
     }
-    var suggestedHeight = 8 * cellSize * (1+spaceToSizeRatio);
-    if(suggestedHeight > +_){
-        cellSize = height / (8 * (1+spaceToSizeRatio));
-        cellSpacing = cellSize * spaceToSizeRatio;
-      }
-    height = +_;
+    heightCalc(_);
 
     return _impl
   };
