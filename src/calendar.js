@@ -8,6 +8,25 @@ import { nest} from 'd3-collection';
 import { timeSunday, timeSundays, timeDays, timeWeek, timeDay} from 'd3-time';
 import { scaleQuantize } from 'd3-scale';
 import { html as svg } from '@redsift/d3-rs-svg';
+import { 
+  presentation10,
+  display,
+  patterns,
+  diagonals,
+  fontImportVariable,
+  fontImportFixed,
+  fontFamilyVariableWidth,
+  fontFamilyFixedWidth,
+  fontSizeForWidth,
+  fontWeightMonochrome,
+  dataWidth,
+  gridWidth,
+  gridDash,
+  axisWidth
+} from '@redsift/d3-rs-theme';
+
+const DEFAULT_ASPECT = 160 / 420;
+
 
 export default function chart(id) {
   var defaultColours = {
@@ -16,16 +35,21 @@ export default function chart(id) {
     purple: ['#fccdfc', '#df7bdf', '#cc48cc', '#bb2dbb', '#890089']
   };
 
-  var classed = 'calendar-chart',
+  let classed = 'calendar-chart',
+      theme = 'light',
+      background = undefined,
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
       weekId = d => dateIdFormat(new Date(d[0].date)),
       dayNum = d => new Date(d.date).getDay(),
       translate = (x,y) => ['translate(',x,y,')'].join(' '),
+      isCalendar = () => type === 'calendar',
+      margin = 26,
       width = 800,
       height = null,
       lastWeeks = 0,
       nextWeeks = 0,
+      type = 'calendar',
       spaceToSizeRatio = 0.15,
       scale = 1.0,
       calendarColumn = 8,
@@ -81,8 +105,13 @@ export default function chart(id) {
     if(lastWeeks === 0 && nextWeeks === 0){
       lastWeeks = 12;
     }
-    var selection = context.selection ? context.selection() : context,
+    let selection = context.selection ? context.selection() : context,
         transition = (context.selection !== undefined);
+
+    let _background = background;
+    if (_background === undefined) {
+      _background = display[theme].background;
+    }
 
     selection.each(function(data) {
       data = data || [];
@@ -90,15 +119,20 @@ export default function chart(id) {
       cellSpacing = cellSize * spaceToSizeRatio;
       heightCalc();
 
-      var node = select(this); 
-      var root = svg().width(width).height(height).scale(scale).margin(0);
-      var tnode = node;
-      if (transition) {
+      let node = select(this);  
+      let sh = height || Math.round(width * DEFAULT_ASPECT);
+      
+      // SVG element
+      let sid = null;
+      if (id) sid = 'svg-' + id;
+      let root = svg(sid).width(width).height(sh).margin(margin).scale(scale).background(_background);
+      let tnode = node;
+      if (transition === true) {
         tnode = node.transition(context);
       }
       tnode.call(root);
-
-      var elmS = node.select(root.child());
+      
+      let elmS = node.select(root.self());
 
       var quantize = scaleQuantize()
         .domain(extent(data, d => d.value))
@@ -117,7 +151,7 @@ export default function chart(id) {
       day.exit()
         .attr('width', 0)
         .attr('height', 0)
-        .attr('y', d => dayNum(d) * (cellSize + cellSpacing))
+        .attr('y', (d,i) => isCalendar ? dayNum(d) : i * (cellSize + cellSpacing))
         .remove();
       day = day.enter()
           .append('rect')
@@ -191,6 +225,14 @@ export default function chart(id) {
     return arguments.length ? (classed = _, _impl) : classed;
   };
 
+  _impl.background = function(_) {
+    return arguments.length ? (background = _, _impl) : background;
+  };
+
+  _impl.theme = function(_) {
+    return arguments.length ? (theme = _, _impl) : theme;
+  }; 
+
   _impl.width = function(_) {
     return arguments.length ? (width = +_, _impl) : width;
   };
@@ -204,8 +246,12 @@ export default function chart(id) {
     return _impl
   };
 
-  _impl.scale = function(value) {
-    return arguments.length ? (scale = value, _impl) : scale;
+  _impl.margin = function(_) {
+    return arguments.length ? (margin = +_, _impl) : margin;
+  };
+
+  _impl.scale = function(_) {
+    return arguments.length ? (scale = _, _impl) : scale;
   }; 
 
   _impl.lastWeeks = function(_) {
@@ -227,6 +273,8 @@ export default function chart(id) {
     }
     return _impl;
   };
+
+  _impl.type = (_) => arguments.length ? (type = +_, _impl) : type
 
   return _impl;
 }
