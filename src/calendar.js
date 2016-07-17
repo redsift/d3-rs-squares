@@ -20,11 +20,6 @@ const DEFAULT_ASPECT = 160 / 420;
 
 
 export default function chart(id) {
-  var defaultColours = {
-    green: ['#b0e288', '#58d655', '#2bb65b', '#00a500', '#016701'],
-    blue: ['#7fcbeb', '#4875e3', '#2a1dc4', '#002ca5', '#00103a'],
-    purple: ['#fccdfc', '#df7bdf', '#cc48cc', '#bb2dbb', '#890089']
-  };
 
   let classed = 'calendar-chart',
       theme = 'light',
@@ -46,7 +41,13 @@ export default function chart(id) {
       calendarColumn = 8,
       cellSize = width / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio,
-      colours = defaultColours.green;
+      colour = 'green';
+
+  let palette = (c) =>[
+    presentation10.lighter[presentation10.names[c]],
+    presentation10.standard[presentation10.names[c]],
+    presentation10.darker[presentation10.names[c]]  
+  ]
 
   function fullCalendar(lw, nw, data){
     var today = Date.now();
@@ -127,7 +128,7 @@ export default function chart(id) {
 
       var quantize = scaleQuantize()
         .domain(extent(data, d => d.value))
-        .range(colours);
+        .range(palette(colour));
 
       data = fullCalendar(lastWeeks, nextWeeks, data);
 
@@ -151,7 +152,7 @@ export default function chart(id) {
             .style('fill', '#f2f2f2')
           .merge(square);
 
-      var oneWeek = (starting) => timeDays(starting.offset(starting(Date.now()), -1),starting(Date.now()))
+      var oneWeek = (starting) => timeDays(starting.offset(starting(Date.now()), -1), starting(Date.now()))
       var yAxis = elmS.selectAll('.wday').data(oneWeek(timeSunday))
       yAxis.exit().remove();
       yAxis = yAxis.enter()
@@ -298,16 +299,8 @@ export default function chart(id) {
     return arguments.length ? (nextWeeks = +_, _impl) : nextWeeks;
   };
 
-  _impl.colours = function(_) {
-    if(!arguments.length){
-      return colours;
-    }
-    if (toString.call(_) === '[object Array]'){
-      colours = _
-    }else{
-      colours = defaultColours[_]
-    }
-    return _impl;
+  _impl.colour = function(_) {
+    return arguments.length ? (colour = +_, _impl) : colour;
   };
 
   _impl.type = (_) => arguments.length ? (type = +_, _impl) : type
