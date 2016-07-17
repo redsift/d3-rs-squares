@@ -32,7 +32,7 @@ export default function chart(id) {
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
       weekId = d => dateIdFormat(new Date(d[0].date)),
-      dayNum = d => new Date(d.date).getDay(),
+      dayNum = d => new Date(d).getDay(),
       translate = (x,y) => ['translate(',x,y,')'].join(' '),
       isCalendar = () => type === 'calendar',
       margin = 26,
@@ -142,7 +142,7 @@ export default function chart(id) {
       square.exit()
         .attr('width', 0)
         .attr('height', 0)
-        .attr('y', (d,i) => (isCalendar ? dayNum(d) : i) * (cellSize + cellSpacing))
+        .attr('y', (d,i) => (isCalendar ? dayNum(d.date) : i) * (cellSize + cellSpacing))
         .remove();
       square = square.enter()
           .append('rect')
@@ -151,7 +151,8 @@ export default function chart(id) {
             .style('fill', '#f2f2f2')
           .merge(square);
 
-      var yAxis = elmS.selectAll('.wday').data(data[1])
+      var oneWeek = (starting) => timeDays(starting.offset(starting(Date.now()), -1),starting(Date.now()))
+      var yAxis = elmS.selectAll('.wday').data(oneWeek(timeSunday))
       yAxis.exit().remove();
       yAxis = yAxis.enter()
           .append('text')
@@ -165,6 +166,7 @@ export default function chart(id) {
       var monthNames = data
         .map((d,i) => ({order: i, date: d[0].date}))
         .filter((d,i) => i>0 && new Date(d.date).getDate() <= 7);
+
       var xAxis = elmS.selectAll('.months').data(monthNames,d => d.date)
       xAxis.exit().remove();
       xAxis = xAxis.enter()
@@ -188,7 +190,7 @@ export default function chart(id) {
       column.attr('transform', (_,i) => translate( ++i * (cellSize + cellSpacing) , cellSize + 2*cellSpacing));
       square.attr('width', cellSize)
           .attr('height', cellSize)
-          .attr('y', (d,i) => (isCalendar ? dayNum(d) : i) * (cellSize + cellSpacing))
+          .attr('y', (d,i) => (isCalendar ? dayNum(d.date) : i) * (cellSize + cellSpacing))
           .style('fill', d => d.value ? quantize(d.value) : '#f2f2f2');
 
       xAxis.attr('transform', d => translate( ++d.order * (cellSize + cellSpacing), cellSize ))
@@ -201,7 +203,7 @@ export default function chart(id) {
           .attr('x', cellSize/2)
           .style('line-height', cellSize)
           .style('font-size', cellSize*0.6)
-          .text(d => d3TimeFormat.timeFormat('%a')(new Date(d.date))[0])
+          .text(d => d3TimeFormat.timeFormat('%a')(new Date(d))[0])
           .style('display', d => dayNum(d)%2 ? '' : 'none');
 
     });
