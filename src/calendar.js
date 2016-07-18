@@ -50,12 +50,8 @@ export default function chart(id) {
     presentation10.darker[presentation10.names[c]]  
   ]
 
-  function fullCalendar(lw, nw, data){
+  function fullCalendar(lw, nw, dataByDate){
     var today = Date.now();
-    var dataByDate = nest()
-      .key(d => dateFormat(new Date(d.date)))
-      .rollup(d => sum(d, g => +g.value))
-      .map(data);
 
     var sunNumB = lw > 0 ? timeWeek.offset(today, -lw-1) : today;
     var sunNumE = nw > 0 ? timeWeek.offset(today, lw > 0 ? nw : nw+1) : today;
@@ -127,11 +123,16 @@ export default function chart(id) {
       
       let elmS = node.select(root.self());
 
+      var dataByDate = nest()
+      .key(d => dateFormat(new Date(d.date)))
+      .rollup(d => sum(d, g => +g.value))
+      .map(data);
+
       var quantize = scaleQuantize()
-        .domain(extent(data, d => d.value))
+        .domain(extent(dataByDate.entries(), d => d.value))
         .range(palette(colour));
 
-      data = fullCalendar(lastWeeks, nextWeeks, data);
+      data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
 
       var column = elmS.selectAll('g').data(data, weekId);
       column.exit().remove();
