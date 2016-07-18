@@ -13,7 +13,7 @@
   "author": {
     "name": "Christos Vontas"
   },
-  "main": "distribution/d3-rs-calendar-chart.umd-es2015.min.js",
+  "main": "distribution/d3-rs-calendar-chart.umd-es2015.js",
   "jsnext:main": "index.js",
   "repository": {
     "type": "git",
@@ -29,10 +29,10 @@
   },
   "dependencies": {
     "@redsift/d3-rs-svg": "~0.2.5",
-    "@redsift/d3-rs-theme": "^0.2.0",
-    "d3-array": "^0.8.1",
-    "d3-collection": "^0.3.1",
-    "d3-scale": "^0.9.0",
+    "@redsift/d3-rs-theme": "^0.3.0",
+    "d3-array": "^1.0.0",
+    "d3-collection": "1.0.0",
+    "d3-scale": "^1.0.1",
     "d3-selection": "^1.0.0",
     "d3-time": "^1.0.0",
     "d3-time-format": "^2.0.0"
