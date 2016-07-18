@@ -47,7 +47,7 @@ export default function chart(id) {
       height = null,
       lastWeeks = 0,
       nextWeeks = 0,
-      type = 'calendar',
+      type = null,
       spaceToSizeRatio = 0.15,
       scale = 1.0,
       calendarColumn = 8,
@@ -102,6 +102,7 @@ export default function chart(id) {
   }
 
   function dateValueCalc(data){
+    lastWeeks = lastWeeks === 0 && nextWeeks === 0 ? 12 : lastWeeks;
     var dataByDate = nest()
       .key(d => dateFormat(new Date(d.date)))
       .rollup(d => sum(d, g => +g.value))
@@ -125,6 +126,10 @@ export default function chart(id) {
         .map((d,i) => ({order: i, date: d[0].date}))
         .filter((d,i) => i>0 && new Date(d.date).getDate() <= 7);
     xAxisData = monthNames;
+
+    cellSize = (width - margin) / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio));
+    cellSpacing = cellSize * spaceToSizeRatio;
+    heightCalc();
 
     return data;
   }
@@ -167,14 +172,14 @@ export default function chart(id) {
         .range(palette(colour))
     yAxisData = a;
     xAxisData = a;
+    spaceToSizeRatio = .05;
+    cellSize = (Math.min(width,height) - margin) / (a.length+1) * (1+spaceToSizeRatio);
+    cellSpacing = cellSize * spaceToSizeRatio;
 
     return matrix;
   }
 
   function _impl(context) {
-    if(lastWeeks === 0 && nextWeeks === 0){
-      lastWeeks = 12;
-    }
     let selection = context.selection ? context.selection() : context,
         transition = (context.selection !== undefined);
 
@@ -185,13 +190,10 @@ export default function chart(id) {
 
     selection.each(function(data) {
       data = data || [];
-      cellSize = (width - margin) / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
-      cellSpacing = cellSize * spaceToSizeRatio;
+      height = height || Math.round(width * DEFAULT_ASPECT);
+      data = type === 'calendar' ? dateValueCalc(data) : xyzCalc(data);
 
       let node = select(this);  
-      height = height || Math.round(width * DEFAULT_ASPECT);
-      
-      heightCalc();
       // SVG element
       let sid = null;
       if (id) sid = 'svg-' + id;
@@ -205,11 +207,6 @@ export default function chart(id) {
       let rootG = snode.select(root.child());
 
       let elmS = rootG.append('g').attr('class', classed).attr('id', id);
-      if(type === 'calendar'){
-        data = dateValueCalc(data);
-      }else{
-        data = xyzCalc(data);
-      }
 
       var column = elmS.selectAll('g').data(data, columnId);
       column.exit().remove();
