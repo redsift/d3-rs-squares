@@ -25,6 +25,7 @@ export default function chart(id) {
   let classed = 'calendar-chart',
       theme = 'light',
       background = undefined,
+      style = undefined,
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
       weekId = (d,i) => d && d.length > 1 ? dateIdFormat(new Date(d[0].date)) : i,
@@ -200,9 +201,10 @@ export default function chart(id) {
         tnode = node.transition(context);
       }
       tnode.call(root);
-      
-      let elmS = node.select(root.self());
+      let snode = node.select(root.self());
+      let rootG = snode.select(root.child());
 
+      let elmS = rootG.append('g').attr('class', classed).attr('id', id);
       if(type === 'calendar'){
         data = dateValueCalc(data);
       }else{
@@ -239,8 +241,7 @@ export default function chart(id) {
           .style('text-anchor', 'middle')
         .merge(yAxis)
           .attr('x', cellSize/2)
-          .style('line-height', cellSize)
-          .style('font-size', cellSize*0.6);
+          .style('line-height', cellSize);
 
 
       var xAxis = elmS.selectAll('.xlabels').data(xAxisData,d => (d.date || d) )
@@ -250,10 +251,8 @@ export default function chart(id) {
           .attr('class', 'xlabels')
           .text(xAxisText)
           .style('text-anchor', 'middle')
-          .style('fill', '#000')
         .merge(xAxis)
-          .style('line-height', cellSize)
-          .style('font-size', cellSize*0.5);
+          .style('line-height', cellSize);
 
     
       if (transition === true) {
@@ -271,15 +270,24 @@ export default function chart(id) {
 
       xAxis.attr('transform', (d,i) => translate( (d.order ? ++d.order : ++i) * (cellSize + cellSpacing), cellSize ))
         .attr('x', cellSize/2)
-        .style('line-height', cellSize)
-        .style('font-size', cellSize*0.5);
+        .style('line-height', cellSize);
 
       yAxis.attr('transform', translate( 0 , 2*cellSize))
           .attr('y', squareY)
           .attr('x', cellSize/2)
           .style('line-height', cellSize)
-          .style('font-size', cellSize*0.6)
           .text(yAxisText);
+
+      let _style = style;
+      if (_style == null) {
+        _style = _impl.defaultStyle();
+      }
+
+      var defsEl = snode.select('defs');
+      var styleEl = defsEl.selectAll('style').data(_style ? [ _style ] : []);
+      styleEl.exit().remove();
+      styleEl = styleEl.enter().append('style').attr('type', 'text/css').merge(styleEl);
+      styleEl.text(_style);
 
     });
   }
@@ -290,38 +298,16 @@ export default function chart(id) {
   _impl.defaultStyle = () => `
                   ${fonts.variable.cssImport}
                   ${fonts.fixed.cssImport}  
-                  ${_impl.self()} .axis line, 
-                  ${_impl.self()} .axis path { 
-                                              shape-rendering: crispEdges; 
-                                              stroke-width: ${widths.axis}; 
-                                              stroke: none;
-                                            }
-                  ${_impl.self()} g.axis-v line, 
 
                   ${_impl.self()} text { 
-                                        font-family: ${fonts.variable.family};
-                                        font-size: ${fonts.variable.sizeForWidth(width)};
-                                        font-weight: ${fonts.variable.weightMonochrome}; 
+                                        font-family: ${fonts.fixed.family};
+                                        font-size: ${fonts.fixed.sizeForWidth(width)};
+                                        font-weight: ${fonts.fixed.weightMonochrome}; 
                                         fill: ${display[theme].text}; 
                                       }
-                   
-                  ${_impl.self()} path.stroke { stroke-width: ${widths.data} }
-                  
-                  ${_impl.self()} g.axis-v line.grid,
-                  ${_impl.self()} g.axis-i line.grid { 
-                                             stroke-width: ${widths.grid}; 
-                                             stroke-dasharray: ${dashes.grid};
-                                             stroke: ${display[theme].grid};
-                                            }
-                  ${_impl.self()} g.axis-i g.tick line.grid.first,
-                  ${_impl.self()} g.axis-v g.tick line.grid.first {
-                                              stroke: none;
-                                            }
-                                            
-                  ${_impl.self()} .axis text, 
-                  ${_impl.self()} g.highlight text { 
-                                   font-family: ${fonts.fixed.family} 
-                                  }
+                  ${_impl.self()} text.ylabels {
+                                        font-size: ${fonts.fixed.sizeForWidth(height)};
+                                      }
                 `;
 
   _impl.classed = function(_) {
@@ -372,6 +358,10 @@ export default function chart(id) {
   _impl.type = function(_) { 
     return arguments.length ? (type = _, _impl) : type 
   };
+
+  _impl.style = function(value) {
+    return arguments.length ? (style = value, _impl) : style;
+  }; 
 
   return _impl;
 }
