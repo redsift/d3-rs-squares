@@ -51,7 +51,7 @@ export default function chart(id) {
       spaceToSizeRatio = 0.15,
       scale = 1.0,
       calendarColumn = 8,
-      cellSize = width / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
+      cellSize = (width - margin) / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio,
       colour = 'green';
 
@@ -93,8 +93,8 @@ export default function chart(id) {
   function heightCalc(overide){
     var suggestedHeight = calendarColumn * cellSize * (1+spaceToSizeRatio);
     // check for the stricter constraint
-    if(height && suggestedHeight > height){
-      cellSize = height / (calendarColumn * (1+spaceToSizeRatio));
+    if(height && suggestedHeight > (height-margin)){
+      cellSize = (height - margin) / (calendarColumn * (1+spaceToSizeRatio));
       cellSpacing = cellSize * spaceToSizeRatio;
     }else{
       height = +overide || suggestedHeight;
@@ -185,17 +185,17 @@ export default function chart(id) {
 
     selection.each(function(data) {
       data = data || [];
-      cellSize = width / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
+      cellSize = (width - margin) / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
       cellSpacing = cellSize * spaceToSizeRatio;
-      heightCalc();
 
       let node = select(this);  
-      let sh = height || Math.round(width * DEFAULT_ASPECT);
+      height = height || Math.round(width * DEFAULT_ASPECT);
       
+      heightCalc();
       // SVG element
       let sid = null;
       if (id) sid = 'svg-' + id;
-      let root = svg(sid).width(width).height(sh).margin(margin).scale(scale).background(_background);
+      let root = svg(sid).width(width).height(height).margin(margin).scale(scale).background(_background);
       let tnode = node;
       if (transition === true) {
         tnode = node.transition(context);
@@ -261,20 +261,20 @@ export default function chart(id) {
         xAxis = xAxis.transition(context);
         yAxis = yAxis.transition(context);
       }
-
-      column.attr('transform', (_,i) => translate( ++i * (cellSize + cellSpacing) , cellSize + 2*cellSpacing));
+      //TODO: push to the left for long names on xAxis
+      column.attr('transform', (_,i) => translate( i * (cellSize + cellSpacing) , cellSpacing));
       square.attr('width', cellSize)
           .attr('height', cellSize)
           .attr('y', (d,i) => squareY(d.date,i))
           .style('fill', d => d.value || d.z ? colorScale(d.value || d.z) : EMPTY_COLOR);
 
-      xAxis.attr('transform', (d,i) => translate( (d.order ? ++d.order : ++i) * (cellSize + cellSpacing), cellSize ))
+      xAxis.attr('transform', (d,i) => translate( (d.order ? d.order : i) * (cellSize + cellSpacing), 0 ))
         .attr('x', cellSize/2)
         .style('line-height', cellSize);
 
-      yAxis.attr('transform', translate( 0 , 2*cellSize))
+      yAxis.attr('transform', translate( 0, cellSize - 2*cellSpacing))
           .attr('y', squareY)
-          .attr('x', cellSize/2)
+          .attr('x', -2*cellSpacing)
           .style('line-height', cellSize)
           .text(yAxisText);
 
