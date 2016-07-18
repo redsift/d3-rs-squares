@@ -54,6 +54,9 @@
     <div id="elm">
 
     </div>
+    <div id="elm2">
+
+    </div>
         
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="//static.redsift.io/reusable/d3-rs-theme/latest/d3-rs-theme.umd-es2015.min.js"></script>
@@ -69,22 +72,38 @@
       {date: '2016-06-02', value: 15}
     ];
 
-    
-    var chart = d3_rs_calendar_chart.html().lastWeeks(12);
+    var matrix = [
+      {x: 'a', y: 'a', z: 3},
+      {x: 'a', y: 'b', z: 1},
+      {x: 'a', y: 'b', z: 15},
+      {x: 'b', y: 'a', z: 1},
+      {x: 'b', y: 'c', z: 1}
+    ];
 
-    var rstip = d3_rs_tip.tip()
-        .attr('class', 'd3-tip')
-        .direction('n')
-        .html((d) => d3.timeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value);
+    
+    var squares = d3_rs_calendar_chart.html()
+      .type('squares');
+
+    var chart = d3_rs_calendar_chart.html()
+      .type('calendar');
+
+    // var rstip = d3_rs_tip.tip()
+    //     .attr('class', 'd3-tip')
+    //     .direction('n')
+        // .html((d) => d3.timeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value);
 
     var chartElm = d3.select('#elm')
       .datum(points)
       .call(chart);
 
-    d3.select('svg').call(rstip);
-    d3.selectAll('.day')
-      .on('mouseover', rstip.show)
-      .on('mouseout', rstip.hide)
+    var chartElm2 = d3.select('#elm2')
+      .datum(matrix)
+      .call(squares);
+
+    // d3.select('svg').call(rstip);
+    // d3.selectAll('.day')
+    //   .on('mouseover', rstip.show)
+    //   .on('mouseout', rstip.hide)
 
     // chartElm.transition().delay(1500).call(chart.lastWeeks(20));
     // chartElm.transition().delay(3000).call(chart.lastWeeks(40).width(1200).colours('purple'));

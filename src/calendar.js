@@ -3,7 +3,7 @@
 */
 import { select } from 'd3-selection';
 import * as d3TimeFormat from 'd3-time-format';
-import { sum, extent } from 'd3-array';
+import { sum, extent, max, min } from 'd3-array';
 import { nest} from 'd3-collection';
 import { timeSunday, timeSundays, timeDays, timeWeek, timeDay} from 'd3-time';
 import { scaleQuantize } from 'd3-scale';
@@ -27,16 +27,20 @@ export default function chart(id) {
       background = undefined,
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
-      weekId = d => dateIdFormat(new Date(d[0].date)),
+      weekId = (d,i) => d && d.length > 1 ? dateIdFormat(new Date(d[0].date)) : i,
       dayNum = d => new Date(d).getDay(),
       translate = (x,y) => ['translate(',x,y,')'].join(' '),
-      isCalendar = () => type === 'calendar',
       colorScale = () => EMPTY_COLOR,
       squareY = (d,i) => i * (cellSize + cellSpacing),
-      dataX = (d) => d.x,
-      dataY = (d) => d.y,
-      dataZ = (d) => d.z,
-      xAxisText = dataX,
+      dI = d => d,
+      dX = d => d.x,
+      dY = d => d.y,
+      dZ = d => d.z,
+      xAxisText = dI,
+      yAxisText = dI, 
+      columnId = dY,
+      yAxisData = [],
+      xAxisData = [],
       margin = 26,
       width = 800,
       height = null,
@@ -106,15 +110,64 @@ export default function chart(id) {
         .domain(extent(dataByDate.entries(), d => d.value))
         .range(palette(colour));
 
-    squareY = (d,i) => dayNum(d.date) * (cellSize + cellSpacing)
-    dataX = (d) => dateFormat(new Date(d.date))
+    columnId = weekId;
+    squareY = d => dayNum(d) * (cellSize + cellSpacing)
+    dX = (d) => dateFormat(new Date(d.date))
     xAxisText = d => d3TimeFormat.timeFormat('%b')(new Date(d.date))
+    yAxisText = d => d3TimeFormat.timeFormat('%a')(new Date(d))[0]
 
-    return fullCalendar(lastWeeks, nextWeeks, dataByDate);
+    let oneWeek = (starting) => timeDays(starting.offset(starting(Date.now()), -1), starting(Date.now()))
+    yAxisData = oneWeek(timeSunday);
+
+    data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
+    var monthNames = data
+        .map((d,i) => ({order: i, date: d[0].date}))
+        .filter((d,i) => i>0 && new Date(d.date).getDate() <= 7);
+    xAxisData = monthNames;
+
+    return data;
   }
 
-  function xyzCalc(){
+  function xyzCalc(data){
+    let matrix = [];
+    // get unique x and y
+    let set = new Set();
+    data.forEach((v)=>{  
+      set.add(v.x);
+      set.add(v.y);
+    })
+    var a = Array.from(set).sort();
+    var sum ={};
+    a.map(y => { sum[y]={} });
+    a.map(y => {
+      a.map(x => {
+        sum[y][x] = 0; 
+        sum[x][y] = 0; 
+        })
+    });
+    data.forEach((v) => { 
+      sum[v.x][v.y] += v.z;
+      if(v.x !== v.y){
+        sum[v.y][v.x] += v.z;
+      }
+    });
+    matrix = a.map(y => a.map(x => ({
+        x: x,
+        y: y,
+        z: sum[x][y]
+      }))
+    );
 
+    colorScale = scaleQuantize()
+        .domain([
+          min(matrix, d => min(d, dZ)),
+          max(matrix, d => max(d, dZ))
+          ])
+        .range(palette(colour))
+    yAxisData = a;
+    xAxisData = a;
+
+    return matrix;
   }
 
   function _impl(context) {
@@ -151,50 +204,50 @@ export default function chart(id) {
       let elmS = node.select(root.self());
 
       if(type === 'calendar'){
-         data = dateValueCalc(data);
+        data = dateValueCalc(data);
+      }else{
+        data = xyzCalc(data);
       }
 
-      var column = elmS.selectAll('g').data(data, weekId);
+      var column = elmS.selectAll('g').data(data, columnId);
       column.exit().remove();
       column = column.enter()
           .append('g')
-          .attr('id', weekId)
+          .attr('id', columnId)
         .merge(column);
 
-      var square = column.selectAll('.day').data((d) => d)
+      var square = column.selectAll('.square').data((d) => d)
       square.exit()
         .attr('width', 0)
         .attr('height', 0)
-        .attr('y', squareY)
+        .attr('y', (d,i) => squareY(d.date,i))
         .remove();
       square = square.enter()
           .append('rect')
-            .attr('class', 'day')
-            .attr('data-x',dataX)
+            .attr('class', 'square')
+            .attr('data-x', dX)
+            .attr('data-z', dZ)
             .style('fill', EMPTY_COLOR)
           .merge(square);
 
-      var oneWeek = (starting) => timeDays(starting.offset(starting(Date.now()), -1), starting(Date.now()))
-      var yAxis = elmS.selectAll('.wday').data(oneWeek(timeSunday))
+
+      var yAxis = elmS.selectAll('.ylabels').data(yAxisData)
       yAxis.exit().remove();
       yAxis = yAxis.enter()
           .append('text')
-          .attr('class','wday')
+          .attr('class','ylabels')
           .style('text-anchor', 'middle')
         .merge(yAxis)
           .attr('x', cellSize/2)
           .style('line-height', cellSize)
           .style('font-size', cellSize*0.6);
 
-      var monthNames = data
-        .map((d,i) => ({order: i, date: d[0].date}))
-        .filter((d,i) => i>0 && new Date(d.date).getDate() <= 7);
 
-      var xAxis = elmS.selectAll('.months').data(monthNames,d => d.date)
+      var xAxis = elmS.selectAll('.xlabels').data(xAxisData,d => (d.date || d) )
       xAxis.exit().remove();
       xAxis = xAxis.enter()
         .append('text')
-          .attr('class', 'months')
+          .attr('class', 'xlabels')
           .text(xAxisText)
           .style('text-anchor', 'middle')
           .style('fill', '#000')
@@ -213,21 +266,20 @@ export default function chart(id) {
       column.attr('transform', (_,i) => translate( ++i * (cellSize + cellSpacing) , cellSize + 2*cellSpacing));
       square.attr('width', cellSize)
           .attr('height', cellSize)
-          .attr('y', squareY)
-          .style('fill', d => d.value ? colorScale(d.value) : EMPTY_COLOR);
+          .attr('y', (d,i) => squareY(d.date,i))
+          .style('fill', d => d.value || d.z ? colorScale(d.value || d.z) : EMPTY_COLOR);
 
-      xAxis.attr('transform', d => translate( ++d.order * (cellSize + cellSpacing), cellSize ))
+      xAxis.attr('transform', (d,i) => translate( (d.order ? ++d.order : ++i) * (cellSize + cellSpacing), cellSize ))
         .attr('x', cellSize/2)
         .style('line-height', cellSize)
         .style('font-size', cellSize*0.5);
 
       yAxis.attr('transform', translate( 0 , 2*cellSize))
-          .attr('y', d => dayNum(d) * (cellSize + cellSpacing) )
+          .attr('y', squareY)
           .attr('x', cellSize/2)
           .style('line-height', cellSize)
           .style('font-size', cellSize*0.6)
-          .text(d => d3TimeFormat.timeFormat('%a')(new Date(d))[0])
-          .style('display', d => dayNum(d)%2 ? '' : 'none');
+          .text(yAxisText);
 
     });
   }
@@ -236,8 +288,8 @@ export default function chart(id) {
   _impl.id = function() { return id; };
   
   _impl.defaultStyle = () => `
-                  ${fontImportVariable}
-                  ${fontImportFixed}  
+                  ${fonts.variable.cssImport}
+                  ${fonts.fixed.cssImport}  
                   ${_impl.self()} .axis line, 
                   ${_impl.self()} .axis path { 
                                               shape-rendering: crispEdges; 
@@ -245,15 +297,7 @@ export default function chart(id) {
                                               stroke: none;
                                             }
                   ${_impl.self()} g.axis-v line, 
-                  ${_impl.self()} g.axis-v path { 
-                                              stroke: ${axisDisplayValue === true ? display[theme].axis : 'none'}; 
-                                            }
-                                            
-                  ${_impl.self()} g.axis-i line, 
-                  ${_impl.self()} g.axis-i path { 
-                                              stroke: ${axisDisplayIndex === true ? display[theme].axis : 'none'}; 
-                                            }
-                                              
+
                   ${_impl.self()} text { 
                                         font-family: ${fonts.variable.family};
                                         font-size: ${fonts.variable.sizeForWidth(width)};
@@ -325,7 +369,9 @@ export default function chart(id) {
     return arguments.length ? (colour = +_, _impl) : colour;
   };
 
-  _impl.type = (_) => arguments.length ? (type = +_, _impl) : type
+  _impl.type = function(_) { 
+    return arguments.length ? (type = _, _impl) : type 
+  };
 
   return _impl;
 }
