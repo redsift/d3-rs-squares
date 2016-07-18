@@ -31,6 +31,12 @@ export default function chart(id) {
       dayNum = d => new Date(d).getDay(),
       translate = (x,y) => ['translate(',x,y,')'].join(' '),
       isCalendar = () => type === 'calendar',
+      colorScale = () => EMPTY_COLOR,
+      squareY = (d,i) => i * (cellSize + cellSpacing),
+      dataX = (d) => d.x,
+      dataY = (d) => d.y,
+      dataZ = (d) => d.z,
+      xAxisText = dataX,
       margin = 26,
       width = 800,
       height = null,
@@ -90,6 +96,27 @@ export default function chart(id) {
     }
   }
 
+  function dateValueCalc(data){
+    var dataByDate = nest()
+      .key(d => dateFormat(new Date(d.date)))
+      .rollup(d => sum(d, g => +g.value))
+      .map(data);
+
+    colorScale = scaleQuantize()
+        .domain(extent(dataByDate.entries(), d => d.value))
+        .range(palette(colour));
+
+    squareY = (d,i) => dayNum(d.date) * (cellSize + cellSpacing)
+    dataX = (d) => dateFormat(new Date(d.date))
+    xAxisText = d => d3TimeFormat.timeFormat('%b')(new Date(d.date))
+
+    return fullCalendar(lastWeeks, nextWeeks, dataByDate);
+  }
+
+  function xyzCalc(){
+
+  }
+
   function _impl(context) {
     if(lastWeeks === 0 && nextWeeks === 0){
       lastWeeks = 12;
@@ -123,16 +150,9 @@ export default function chart(id) {
       
       let elmS = node.select(root.self());
 
-      var dataByDate = nest()
-      .key(d => dateFormat(new Date(d.date)))
-      .rollup(d => sum(d, g => +g.value))
-      .map(data);
-
-      var quantize = scaleQuantize()
-        .domain(extent(dataByDate.entries(), d => d.value))
-        .range(palette(colour));
-
-      data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
+      if(type === 'calendar'){
+         data = dateValueCalc(data);
+      }
 
       var column = elmS.selectAll('g').data(data, weekId);
       column.exit().remove();
@@ -145,12 +165,12 @@ export default function chart(id) {
       square.exit()
         .attr('width', 0)
         .attr('height', 0)
-        .attr('y', (d,i) => (isCalendar ? dayNum(d.date) : i) * (cellSize + cellSpacing))
+        .attr('y', squareY)
         .remove();
       square = square.enter()
           .append('rect')
             .attr('class', 'day')
-            .attr('data-date', d => dateFormat(new Date(d.date)))
+            .attr('data-x',dataX)
             .style('fill', EMPTY_COLOR)
           .merge(square);
 
@@ -175,7 +195,7 @@ export default function chart(id) {
       xAxis = xAxis.enter()
         .append('text')
           .attr('class', 'months')
-          .text(d => d3TimeFormat.timeFormat('%b')(new Date(d.date)))
+          .text(xAxisText)
           .style('text-anchor', 'middle')
           .style('fill', '#000')
         .merge(xAxis)
@@ -193,8 +213,8 @@ export default function chart(id) {
       column.attr('transform', (_,i) => translate( ++i * (cellSize + cellSpacing) , cellSize + 2*cellSpacing));
       square.attr('width', cellSize)
           .attr('height', cellSize)
-          .attr('y', (d,i) => (isCalendar ? dayNum(d.date) : i) * (cellSize + cellSpacing))
-          .style('fill', d => d.value ? quantize(d.value) : EMPTY_COLOR);
+          .attr('y', squareY)
+          .style('fill', d => d.value ? colorScale(d.value) : EMPTY_COLOR);
 
       xAxis.attr('transform', d => translate( ++d.order * (cellSize + cellSpacing), cellSize ))
         .attr('x', cellSize/2)
