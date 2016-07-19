@@ -17,6 +17,7 @@ import {
 } from '@redsift/d3-rs-theme';
 
 const DEFAULT_ASPECT = 160 / 420;
+const DEFAULT_AXIS_PADDING = 8;
 const EMPTY_COLOR = '#f2f2f2';
 
 
@@ -32,7 +33,7 @@ export default function chart(id) {
       dayNum = d => new Date(d).getDay(),
       translate = (x,y) => ['translate(',x,y,')'].join(' '),
       colorScale = () => EMPTY_COLOR,
-      squareY = (d,i) => i * (cellSize + cellSpacing),
+      squareY = (d,i) => i * cellSize,
       dI = d => d,
       dX = d => d.x,
       dY = d => d.y,
@@ -48,11 +49,9 @@ export default function chart(id) {
       lastWeeks = 0,
       nextWeeks = 0,
       type = null,
-      spaceToSizeRatio = 0.15,
       scale = 1.0,
       calendarColumn = 8,
-      cellSize = (width - margin) / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio)),
-      cellSpacing = cellSize * spaceToSizeRatio,
+      cellSize = (width - margin) / (lastWeeks+nextWeeks+2),
       colour = 'green';
 
   let palette = (c) =>[
@@ -91,11 +90,10 @@ export default function chart(id) {
   }
 
   function heightCalc(overide){
-    var suggestedHeight = calendarColumn * cellSize * (1+spaceToSizeRatio);
+    var suggestedHeight = calendarColumn * cellSize;
     // check for the stricter constraint
     if(height && suggestedHeight > (height-margin)){
-      cellSize = (height - margin) / (calendarColumn * (1+spaceToSizeRatio));
-      cellSpacing = cellSize * spaceToSizeRatio;
+      cellSize = (height - margin) / calendarColumn;
     }else{
       height = +overide || suggestedHeight;
     }
@@ -113,7 +111,7 @@ export default function chart(id) {
         .range(palette(colour));
 
     columnId = weekId;
-    squareY = d => dayNum(d) * (cellSize + cellSpacing)
+    squareY = d => dayNum(d) * cellSize
     dX = (d) => dateFormat(new Date(d.date))
     xAxisText = d => d3TimeFormat.timeFormat('%b')(new Date(d.date))
     yAxisText = d => d3TimeFormat.timeFormat('%a')(new Date(d))[0]
@@ -127,8 +125,7 @@ export default function chart(id) {
         .filter((d,i) => i>0 && new Date(d.date).getDate() <= 7);
     xAxisData = monthNames;
 
-    cellSize = (width - margin) / ((lastWeeks+nextWeeks+2) * (1+spaceToSizeRatio));
-    cellSpacing = cellSize * spaceToSizeRatio;
+    cellSize = (width - margin) / (lastWeeks+nextWeeks+2) ;
     heightCalc();
 
     return data;
@@ -172,9 +169,7 @@ export default function chart(id) {
         .range(palette(colour))
     yAxisData = a;
     xAxisData = a;
-    spaceToSizeRatio = .05;
-    cellSize = (Math.min(width,height) - margin) / (a.length+1) * (1+spaceToSizeRatio);
-    cellSpacing = cellSize * spaceToSizeRatio;
+    cellSize = (Math.min(width,height) - margin) / (a.length+1);
 
     return matrix;
   }
@@ -226,7 +221,6 @@ export default function chart(id) {
             .attr('class', 'square')
             .attr('data-x', dX)
             .attr('data-z', dZ)
-            .style('fill', EMPTY_COLOR)
           .merge(square);
 
 
@@ -241,7 +235,7 @@ export default function chart(id) {
           .style('line-height', cellSize);
 
 
-      var xAxis = elmS.selectAll('.xlabels').data(xAxisData,d => (d.date || d) )
+      var xAxis = elmS.selectAll('.xlabels').data(xAxisData, d => (d.date || d))
       xAxis.exit().remove();
       xAxis = xAxis.enter()
         .append('text')
@@ -259,19 +253,19 @@ export default function chart(id) {
         yAxis = yAxis.transition(context);
       }
       //TODO: push to the left for long names on xAxis
-      column.attr('transform', (_,i) => translate( i * (cellSize + cellSpacing) , cellSpacing));
+      column.attr('transform', (_,i) => translate( i * cellSize , DEFAULT_AXIS_PADDING));
       square.attr('width', cellSize)
           .attr('height', cellSize)
           .attr('y', (d,i) => squareY(d.date,i))
           .style('fill', d => d.value || d.z ? colorScale(d.value || d.z) : EMPTY_COLOR);
 
-      xAxis.attr('transform', (d,i) => translate( (d.order ? d.order : i) * (cellSize + cellSpacing), 0 ))
+      xAxis.attr('transform', (d,i) => translate( (d.order || i) * cellSize, 0 ))
         .attr('x', cellSize/2)
         .style('line-height', cellSize);
 
-      yAxis.attr('transform', translate( 0, cellSize - 2*cellSpacing))
+      yAxis.attr('transform', translate( 0, cellSize/2 + DEFAULT_AXIS_PADDING ))
           .attr('y', squareY)
-          .attr('x', -2*cellSpacing)
+          .attr('x', -DEFAULT_AXIS_PADDING)
           .style('line-height', cellSize)
           .text(yAxisText);
 
@@ -304,7 +298,13 @@ export default function chart(id) {
                                       }
                   ${_impl.self()} text.ylabels {
                                         font-size: ${fonts.fixed.sizeForWidth(height)};
+                                        alignment-baseline: middle;
                                       }
+                  ${_impl.self()} .square {
+                                        fill: ${EMPTY_COLOR};
+                                        stroke: ${display[theme].background};
+                                        stroke-width: .125rem;
+                  }
                 `;
 
   _impl.classed = function(_) {
