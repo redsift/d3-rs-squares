@@ -78,14 +78,26 @@ export default function chart(id) {
                       (nw > 0) ? timeDaysFuture :
                         timeDays(today,today);
 
-
-    return timeSundays(sunNumB, sunNumE)
-        .map(sunday =>
-          timeSide(sunday).map(d => ({
-              x: dateFormat(d),
-              z: dataByDate.get(dateFormat(d)) || 0
-            }))
+    var result = [];
+    timeSundays(sunNumB, sunNumE)
+        .map(sunday =>{
+          let temp = [];
+          let m1 = false;
+          timeSide(sunday).map(d => {
+              if(new Date(d).getDate() === 1 && temp.length > 0){
+                m1 = true;
+                result.push(temp.slice(0));
+                temp = [];
+              }
+              temp.push({ 
+                x: dateFormat(d),
+                z: dataByDate.get(dateFormat(d)) || 0
+              });
+            })
+          result.push(temp);
+        }
       );
+    return result;
   }
 
   function heightCalc(overide){
@@ -252,6 +264,7 @@ export default function chart(id) {
       column.attr('transform', (_,i) => translate( i * cellSize , DEFAULT_AXIS_PADDING));
       square.attr('width', cellSize)
           .attr('height', cellSize)
+          .attr('data-x', dX)
           .attr('y', squareY)
           .style('fill', d => d.z ? colorScale(d.z) : '');
 
