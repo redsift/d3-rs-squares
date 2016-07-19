@@ -27,6 +27,7 @@ export default function chart(id) {
       theme = 'light',
       background = undefined,
       style = undefined,
+      starting = timeSunday,
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
       dayNum = d => new Date(d).getDay(),
@@ -131,13 +132,16 @@ export default function chart(id) {
     xAxisText = d => d3TimeFormat.timeFormat('%b')(new Date(retroDate(d)))
     yAxisText = d => d3TimeFormat.timeFormat('%a')(new Date(d))[0]
 
-    let oneWeek = (starting) => timeDays(starting.offset(starting(Date.now()), -1), starting(Date.now()))
-    yAxisData = oneWeek(timeSunday);
+    yAxisData = timeDays(starting.offset(starting(Date.now()), -1), starting(Date.now()))
 
     data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
     var monthNames = data
         .map((d,i) => ({order: i, date: retroDate(d[0])}))
-        .filter((d,i) => i>0 && new Date(retroDate(d)).getDate() <= 7);
+        .filter((d,i) => {
+          const x = new Date(retroDate(d));
+          const s = new Date(starting(Date.now()))
+          return i>0 && x.getDate() <= 7 && x.getDay() === s.getDay();
+        });
     xAxisData = monthNames;
 
     cellSize = (width - margin) / (lastWeeks+nextWeeks+2);
