@@ -248,10 +248,11 @@ export default function chart(id) {
       }
       //TODO: push to the left for long names on xAxis
       column.attr('transform', (_,i) => translate( i * cellSize , DEFAULT_AXIS_PADDING));
+      let squareFill = d => (d ? colorScale(d) : '');
       square.attr('width', cellSize)
           .attr('height', cellSize)
           .attr('y', (d,i) => squareY(d.date,i))
-          .style('fill', d => d.value || d.z ? colorScale(d.value || d.z) : EMPTY_COLOR);
+          .style('fill', d => squareFill(d.value || d.z));
 
       xAxis.attr('transform', (d,i) => translate( (d.order || i) * cellSize, 0 ))
         .text(xAxisText)
