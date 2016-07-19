@@ -100,6 +100,7 @@ export default function chart(id) {
   }
 
   function dateValueCalc(data){
+    data = data || [];
     lastWeeks = lastWeeks === 0 && nextWeeks === 0 ? 12 : lastWeeks;
     var dataByDate = nest()
       .key(d => dateFormat(new Date(d.date)))
@@ -132,6 +133,9 @@ export default function chart(id) {
   }
 
   function xyzCalc(data){
+    if(!data || data.length < 1){
+      data = [{x:'a',y:'b',z:0}];
+    }
     let matrix = [];
     // get unique x and y
     let set = new Set();
@@ -184,10 +188,9 @@ export default function chart(id) {
     }
 
     selection.each(function(data) {
-      data = data || [];
       height = height || Math.round(width * DEFAULT_ASPECT);
       data = type === 'calendar' ? dateValueCalc(data) : xyzCalc(data);
-      let node = select(this);  
+      let node = select(this);
       // SVG element
       let sid = null;
       if (id) sid = 'svg-' + id;
@@ -291,7 +294,6 @@ export default function chart(id) {
                                         text-anchor: middle;
                                       }
                   ${_impl.self()} text.ylabels {
-                                        font-size: ${fonts.fixed.sizeForWidth(height)};
                                         text-anchor: middle;
                                         alignment-baseline: middle;
                                       }

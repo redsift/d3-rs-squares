@@ -93,6 +93,9 @@
     //     .direction('n')
         // .html((d) => d3.timeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value);
 
+    d3.select('#elm').datum([]).call(d3_rs_calendar_chart.html('empty').type('calendar'));
+    d3.select('#elm').datum(null).call(d3_rs_calendar_chart.html('empty-squares'));
+    
     var chartElm = d3.select('#elm')
       .datum(points)
       .call(chart);
