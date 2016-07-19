@@ -5,7 +5,24 @@ import { select } from 'd3-selection';
 import * as d3TimeFormat from 'd3-time-format';
 import { sum, extent, max, min } from 'd3-array';
 import { nest} from 'd3-collection';
-import { timeSunday, timeSundays, timeDays, timeWeek, timeDay} from 'd3-time';
+import { 
+  timeDay, timeDays,
+  timeWeek,
+  timeSunday, timeSundays,
+  utcSunday, utcSundays,
+  timeMonday, timeMondays,
+  utcMonday, utcMondays,
+  timeTuesday, timeTuesdays,
+  utcTuesday, utcTuesdays,
+  timeWednesday, timeWednesdays,
+  utcWednesday, utcWednesdays,
+  timeThursday, timeThursdays,
+  utcThursday, utcThursdays,
+  timeFriday, timeFridays,
+  utcFriday, utcFridays,
+  timeSaturday, timeSaturdays,
+  utcSaturday, utcSaturdays
+} from 'd3-time';
 import { scaleQuantize } from 'd3-scale';
 import { html as svg } from '@redsift/d3-rs-svg';
 import { 
@@ -17,6 +34,7 @@ import {
 } from '@redsift/d3-rs-theme';
 
 const DEFAULT_ASPECT = 160 / 420;
+const DEFAULT_INSET = 24;
 const DEFAULT_AXIS_PADDING = 8;
 const EMPTY_COLOR = '#f2f2f2';
 
@@ -27,6 +45,7 @@ export default function chart(id) {
       theme = 'light',
       background = undefined,
       style = undefined,
+      inset = null,
       starting = timeSunday,
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
@@ -214,6 +233,20 @@ export default function chart(id) {
       _background = display[theme].background;
     }
 
+    let _inset = inset;
+    if (_inset == null) {
+      _inset = { top: DEFAULT_INSET, bottom: 0, left: DEFAULT_INSET, right: 0 };
+      // if (axisValue === 'left') {
+      //   _inset.left = DEFAULT_INSET;
+      // } else {
+      //   _inset.right = DEFAULT_INSET;
+      // }
+    } else if (typeof _inset === 'object') {
+      _inset = { top: _inset.top, bottom: _inset.bottom, left: _inset.left, right: _inset.right };
+    } else {
+      _inset = { top: _inset, bottom: _inset, left: _inset, right: _inset };
+    }
+
     selection.each(function(data) {
       height = height || Math.round(width * DEFAULT_ASPECT);
       data = type === 'calendar' ? dateValueCalc(data) : xyzCalc(data);
@@ -273,19 +306,20 @@ export default function chart(id) {
         yAxis = yAxis.transition(context);
       }
       //TODO: push to the left for long names on xAxis
-      column.attr('transform', (_,i) => translate( i * cellSize , DEFAULT_AXIS_PADDING));
+      console.log(_inset.left)
+      column.attr('transform', (_,i) => translate( _inset.left + (i * cellSize), _inset.top + DEFAULT_AXIS_PADDING));
       square.attr('width', cellSize)
           .attr('height', cellSize)
           .attr('data-x', dX)
           .attr('y', squareY)
           .style('fill', d => d.z ? colorScale(d.z) : '');
 
-      xAxis.attr('transform', (d,i) => translate( (d.order || i) * cellSize, 0 ))
+      xAxis.attr('transform', (d,i) => translate( _inset.left + (d.order || i) * cellSize, _inset.top ))
         .text(xAxisText)
         .attr('x', cellSize/2)
         .style('line-height', cellSize);
 
-      yAxis.attr('transform', translate( 0, cellSize/2 + DEFAULT_AXIS_PADDING ))
+      yAxis.attr('transform', translate( _inset.left, cellSize/2 + DEFAULT_AXIS_PADDING + _inset.top ))
           .attr('y', squareY)
           .attr('x', -DEFAULT_AXIS_PADDING)
           .style('line-height', cellSize)
@@ -387,6 +421,10 @@ export default function chart(id) {
 
   _impl.starting = function(_) {
     return arguments.length ? (starting = _, _impl) : starting;
+  };
+
+  _impl.inset = function(_) {
+    return arguments.length ? (inset = _, _impl) : inset;
   };
 
   return _impl;
