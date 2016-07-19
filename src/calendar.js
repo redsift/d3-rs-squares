@@ -30,7 +30,8 @@ export default function chart(id) {
       starting = timeSunday,
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
-      dayNum = d => new Date(d).getDay(),
+      D = d => new Date(d),
+      dayNum = d => D(d).getDay(),
       translate = (x,y) => `translate(${x},${y})`,
       colorScale = () => EMPTY_COLOR,
       squareY = (_,i) => i * cellSize,
@@ -85,7 +86,7 @@ export default function chart(id) {
           let temp = [];
           let m1 = false;
           timeSide(sunday).map(d => {
-              if(new Date(d).getDate() === 1 && temp.length > 0){
+              if(D(d).getDate() === 1 && temp.length > 0){
                 m1 = true;
                 result.push(temp.slice(0));
                 temp = [];
@@ -116,8 +117,9 @@ export default function chart(id) {
     lastWeeks = lastWeeks === 0 && nextWeeks === 0 ? 12 : lastWeeks;
     let retroDate = d => (d.date || d.x);
     let retroValue = d => (+d.value || +d.z);
+    const checkStarting = dayNum(starting(Date.now()));
     let dataByDate = nest()
-      .key(d => dateFormat(new Date(retroDate(d))))
+      .key(d => dateFormat(D(retroDate(d))))
       .rollup(d => sum(d, retroValue))
       .map(data);
 
@@ -125,23 +127,29 @@ export default function chart(id) {
         .domain(extent(dataByDate.entries(), retroValue))
         .range(palette(colour));
 
-    columnId = (d,i) => d && d.length > 1 ? dateIdFormat(new Date(retroDate(d[0]))) : i;
+    columnId = (d,i) => d && d.length > 1 ? dateIdFormat(D(retroDate(d[0]))) : i;
     // used for squares and yAxis
-    squareY = d => dayNum(d.x || d) * cellSize
-    dX = (d) => dateFormat(new Date(retroDate(d)))
-    xAxisText = d => d3TimeFormat.timeFormat('%b')(new Date(retroDate(d)))
-    yAxisText = d => d3TimeFormat.timeFormat('%a')(new Date(d))[0]
+    squareY = d => {
+      const v = d.x || d;
+      let e = 0;
+      if(dayNum(v) < checkStarting) {
+        e = 6 - dayNum(v)
+      }else{
+        e = dayNum(v) - checkStarting
+      }
+      return e * cellSize
+
+    }
+    dX = (d) => dateFormat(D(retroDate(d)))
+    xAxisText = d => d3TimeFormat.timeFormat('%b')(D(retroDate(d)))
+    yAxisText = d => d3TimeFormat.timeFormat('%a')(D(d))[0]
 
     yAxisData = timeDays(starting.offset(starting(Date.now()), -1), starting(Date.now()))
 
     data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
     var monthNames = data
         .map((d,i) => ({order: i, date: retroDate(d[0])}))
-        .filter((d,i) => {
-          const x = new Date(retroDate(d));
-          const s = new Date(starting(Date.now()))
-          return i>0 && x.getDate() <= 7 && x.getDay() === s.getDay();
-        });
+        .filter((d,i) => i>0 && D(d.date).getDate() <= 7 && dayNum(retroDate(d)) === checkStarting );
     xAxisData = monthNames;
 
     cellSize = (width - margin) / (lastWeeks+nextWeeks+2);
