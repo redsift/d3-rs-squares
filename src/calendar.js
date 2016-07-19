@@ -373,9 +373,13 @@ export default function chart(id) {
     return arguments.length ? (type = _, _impl) : type 
   };
 
-  _impl.style = function(value) {
-    return arguments.length ? (style = value, _impl) : style;
-  }; 
+  _impl.style = function(_) {
+    return arguments.length ? (style = _, _impl) : style;
+  };
+
+  _impl.starting = function(_) {
+    return arguments.length ? (starting = _, _impl) : starting;
+  };
 
   return _impl;
 }
