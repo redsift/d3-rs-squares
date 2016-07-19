@@ -29,7 +29,6 @@ export default function chart(id) {
       style = undefined,
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
-      weekId = (d,i) => d && d.length > 1 ? dateIdFormat(new Date(d[0].date)) : i,
       dayNum = d => new Date(d).getDay(),
       translate = (x,y) => ['translate(',x,y,')'].join(' '),
       colorScale = () => EMPTY_COLOR,
@@ -83,8 +82,8 @@ export default function chart(id) {
     return timeSundays(sunNumB, sunNumE)
         .map(sunday =>
           timeSide(sunday).map(d => ({
-              date: dateFormat(d),
-              value: dataByDate.get(dateFormat(d)) || 0
+              x: dateFormat(d),
+              z: dataByDate.get(dateFormat(d)) || 0
             }))
       );
   }
@@ -102,19 +101,22 @@ export default function chart(id) {
   function dateValueCalc(data){
     data = data || [];
     lastWeeks = lastWeeks === 0 && nextWeeks === 0 ? 12 : lastWeeks;
-    var dataByDate = nest()
-      .key(d => dateFormat(new Date(d.date)))
-      .rollup(d => sum(d, g => +g.value))
+    let retroDate = d => (d.date || d.x);
+    let retroValue = d => (+d.value || +d.z);
+    let dataByDate = nest()
+      .key(d => dateFormat(new Date(retroDate(d))))
+      .rollup(d => sum(d, retroValue))
       .map(data);
 
     colorScale = scaleQuantize()
-        .domain(extent(dataByDate.entries(), d => d.value))
+        .domain(extent(dataByDate.entries(), retroValue))
         .range(palette(colour));
 
-    columnId = weekId;
-    squareY = d => dayNum(d) * cellSize
-    dX = (d) => dateFormat(new Date(d.date))
-    xAxisText = d => d3TimeFormat.timeFormat('%b')(new Date(d.date))
+    columnId = (d,i) => d && d.length > 1 ? dateIdFormat(new Date(retroDate(d[0]))) : i;
+    // used for squares and yAxis
+    squareY = d => dayNum(d.x || d) * cellSize
+    dX = (d) => dateFormat(new Date(retroDate(d)))
+    xAxisText = d => d3TimeFormat.timeFormat('%b')(new Date(retroDate(d)))
     yAxisText = d => d3TimeFormat.timeFormat('%a')(new Date(d))[0]
 
     let oneWeek = (starting) => timeDays(starting.offset(starting(Date.now()), -1), starting(Date.now()))
@@ -122,8 +124,8 @@ export default function chart(id) {
 
     data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
     var monthNames = data
-        .map((d,i) => ({order: i, date: d[0].date}))
-        .filter((d,i) => i>0 && new Date(d.date).getDate() <= 7);
+        .map((d,i) => ({order: i, date: retroDate(d[0])}))
+        .filter((d,i) => i>0 && new Date(retroDate(d)).getDate() <= 7);
     xAxisData = monthNames;
 
     cellSize = (width - margin) / (lastWeeks+nextWeeks+2);
@@ -248,11 +250,10 @@ export default function chart(id) {
       }
       //TODO: push to the left for long names on xAxis
       column.attr('transform', (_,i) => translate( i * cellSize , DEFAULT_AXIS_PADDING));
-      let squareFill = d => (d ? colorScale(d) : '');
       square.attr('width', cellSize)
           .attr('height', cellSize)
-          .attr('y', (d,i) => squareY(d.date,i))
-          .style('fill', d => squareFill(d.value || d.z));
+          .attr('y', squareY)
+          .style('fill', d => d.z ? colorScale(d.z) : '');
 
       xAxis.attr('transform', (d,i) => translate( (d.order || i) * cellSize, 0 ))
         .text(xAxisText)

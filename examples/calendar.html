@@ -72,6 +72,13 @@
       {date: '2016-06-02', value: 15}
     ];
 
+    var pointsXZ = [
+      {x: '2016-07-01', z: 10},
+      {x: '2016-07-01', z: 20},
+      {x: '2016-07-05', z: 5},
+      {x: '2016-06-02', z: 15}
+    ];
+
     var matrix = [
       {x: 'a', y: 'a', z: 3},
       {x: 'a', y: 'b', z: 1},
@@ -80,10 +87,17 @@
       {x: 'b', y: 'c', z: 1}
     ];
 
+    var matrix2 = [
+      {x: 'a1', y: 'a', z: 3},
+      {x: 'a', y: 'b', z: 1},
+      {x: 'a', y: 'b', z: 15},
+      {x: 'b', y: 'a', z: 1},
+      {x: 'b', y: 'c', z: 1},
+      {x: 'c', y: 'd', z: 0.5}
+    ];
+
     
-    var squares = d3_rs_calendar_chart.html('squares')
-      .classed('one')
-      .theme('dark');
+    var squares = d3_rs_calendar_chart.html('squares').theme('dark');
 
     var chart = d3_rs_calendar_chart.html('calendar')
       .type('calendar');
@@ -100,7 +114,7 @@
       .datum(points)
       .call(chart);
 
-    var chartElm2 = d3.select('#elm')
+    var squareElm = d3.select('#elm')
       .datum(matrix)
       .call(squares);
 
@@ -109,8 +123,11 @@
     //   .on('mouseover', rstip.show)
     //   .on('mouseout', rstip.hide)
 
-    // chartElm.transition().delay(1500).call(chart.lastWeeks(20));
-    // chartElm.transition().delay(3000).call(chart.lastWeeks(40).width(1200).colours('purple'));
+    chartElm.datum(points).transition().delay(1500).call(chart.lastWeeks(20));
+    chartElm.datum(pointsXZ).transition().delay(3000).call(chart.lastWeeks(20));
+    // chartElm.datum(points).transition().delay(3000).call(chart.width(1200).colour('blue'));
+    squareElm.datum(matrix).transition().delay(1500).call(squares.colour('blue'));
+    // squareElm.datum(matrix2).transition().delay(3000).call(squares);
     // chartElm.transition().delay(4500).call(chart.width(600));
     // chartElm.transition().delay(6000).call(chart.scale(1.5));
 
