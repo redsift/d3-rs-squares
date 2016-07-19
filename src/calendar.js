@@ -30,7 +30,7 @@ export default function chart(id) {
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
       dayNum = d => new Date(d).getDay(),
-      translate = (x,y) => ['translate(',x,y,')'].join(' '),
+      translate = (x,y) => `translate(${x},${y})`,
       colorScale = () => EMPTY_COLOR,
       squareY = (_,i) => i * cellSize,
       dI = d => d,
