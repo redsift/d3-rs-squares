@@ -187,7 +187,6 @@ export default function chart(id) {
       data = data || [];
       height = height || Math.round(width * DEFAULT_ASPECT);
       data = type === 'calendar' ? dateValueCalc(data) : xyzCalc(data);
-
       let node = select(this);  
       // SVG element
       let sid = null;
@@ -201,7 +200,10 @@ export default function chart(id) {
       let snode = node.select(root.self());
       let rootG = snode.select(root.child());
 
-      let elmS = rootG.append('g').attr('class', classed).attr('id', id);
+      let elmS = rootG.select(_impl.self());
+      if (elmS.empty()) {
+        elmS = rootG.append('g').attr('class', classed).attr('id', id);
+      }
 
       var column = elmS.selectAll('g').data(data, columnId);
       column.exit().remove();
@@ -211,16 +213,10 @@ export default function chart(id) {
         .merge(column);
 
       var square = column.selectAll('.square').data((d) => d)
-      square.exit()
-        .attr('width', 0)
-        .attr('height', 0)
-        .attr('y', (d,i) => squareY(d.date,i))
-        .remove();
+      square.exit().remove();
       square = square.enter()
           .append('rect')
             .attr('class', 'square')
-            .attr('data-x', dX)
-            .attr('data-z', dZ)
           .merge(square);
 
 
@@ -229,10 +225,7 @@ export default function chart(id) {
       yAxis = yAxis.enter()
           .append('text')
           .attr('class','ylabels')
-          .style('text-anchor', 'middle')
         .merge(yAxis)
-          .attr('x', cellSize/2)
-          .style('line-height', cellSize);
 
 
       var xAxis = elmS.selectAll('.xlabels').data(xAxisData, d => (d.date || d))
@@ -240,10 +233,7 @@ export default function chart(id) {
       xAxis = xAxis.enter()
         .append('text')
           .attr('class', 'xlabels')
-          .text(xAxisText)
-          .style('text-anchor', 'middle')
         .merge(xAxis)
-          .style('line-height', cellSize);
 
     
       if (transition === true) {
@@ -260,6 +250,7 @@ export default function chart(id) {
           .style('fill', d => d.value || d.z ? colorScale(d.value || d.z) : EMPTY_COLOR);
 
       xAxis.attr('transform', (d,i) => translate( (d.order || i) * cellSize, 0 ))
+        .text(xAxisText)
         .attr('x', cellSize/2)
         .style('line-height', cellSize);
 
@@ -296,8 +287,12 @@ export default function chart(id) {
                                         font-weight: ${fonts.fixed.weightMonochrome}; 
                                         fill: ${display[theme].text}; 
                                       }
+                  ${_impl.self()} text.xlabels {
+                                        text-anchor: middle;
+                                      }
                   ${_impl.self()} text.ylabels {
                                         font-size: ${fonts.fixed.sizeForWidth(height)};
+                                        text-anchor: middle;
                                         alignment-baseline: middle;
                                       }
                   ${_impl.self()} .square {
