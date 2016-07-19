@@ -344,7 +344,7 @@ export default function chart(id) {
   };
 
   _impl.colour = function(_) {
-    return arguments.length ? (colour = +_, _impl) : colour;
+    return arguments.length ? (colour = _, _impl) : colour;
   };
 
   _impl.type = function(_) { 
