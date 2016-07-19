@@ -23,7 +23,7 @@ const EMPTY_COLOR = '#f2f2f2';
 
 export default function chart(id) {
 
-  let classed = 'calendar-chart',
+  let classed = 'square-chart',
       theme = 'light',
       background = undefined,
       style = undefined,
@@ -33,14 +33,14 @@ export default function chart(id) {
       dayNum = d => new Date(d).getDay(),
       translate = (x,y) => ['translate(',x,y,')'].join(' '),
       colorScale = () => EMPTY_COLOR,
-      squareY = (d,i) => i * cellSize,
+      squareY = (_,i) => i * cellSize,
       dI = d => d,
       dX = d => d.x,
       dY = d => d.y,
       dZ = d => d.z,
       xAxisText = dI,
       yAxisText = dI, 
-      columnId = dY,
+      columnId = dI,
       yAxisData = [],
       xAxisData = [],
       margin = 26,
@@ -174,6 +174,7 @@ export default function chart(id) {
     yAxisData = a;
     xAxisData = a;
     cellSize = (Math.min(width,height) - margin) / (a.length+1);
+    columnId = (d,i) => d && d.length > 1 ? d[0].y : i;
 
     return matrix;
   }
