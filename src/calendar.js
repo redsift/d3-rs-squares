@@ -125,7 +125,7 @@ export default function chart(id) {
         .filter((d,i) => i>0 && new Date(d.date).getDate() <= 7);
     xAxisData = monthNames;
 
-    cellSize = (width - margin) / (lastWeeks+nextWeeks+2) ;
+    cellSize = (width - margin) / (lastWeeks+nextWeeks+2);
     heightCalc();
 
     return data;

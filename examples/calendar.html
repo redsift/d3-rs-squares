@@ -81,11 +81,11 @@
     ];
 
     
-    var squares = d3_rs_calendar_chart.html()
+    var squares = d3_rs_calendar_chart.html('squares')
       .classed('one')
       .theme('dark');
 
-    var chart = d3_rs_calendar_chart.html()
+    var chart = d3_rs_calendar_chart.html('calendar')
       .type('calendar');
 
     // var rstip = d3_rs_tip.tip()
@@ -97,7 +97,7 @@
       .datum(points)
       .call(chart);
 
-    var chartElm2 = d3.select('#elm2')
+    var chartElm2 = d3.select('#elm')
       .datum(matrix)
       .call(squares);
 
