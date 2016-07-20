@@ -80,8 +80,8 @@
     ];
 
     var matrix = [
-      {x: 'a', y: 'a', z: 3},
-      {x: 'a', y: 'b', z: 1},
+      {x: 'aasdfasdfasd', y: 'a', z: 3},
+      {x: 'aasdfasdfasd', y: 'b', z: 1},
       {x: 'a', y: 'b', z: 15},
       {x: 'b', y: 'a', z: 1},
       {x: 'b', y: 'c', z: 1}
@@ -97,7 +97,7 @@
     ];
 
     
-    var squares = d3_rs_calendar_chart.html('squares').theme('dark');
+    var squares = d3_rs_calendar_chart.html('squares').theme('dark').inset({left: 100, top: 24, bottom: 0, right: 0});
 
     var chart = d3_rs_calendar_chart.html('calendar')
       .type('calendar');

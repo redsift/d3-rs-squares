@@ -71,7 +71,7 @@ export default function chart(id) {
       type = null,
       scale = 1.0,
       calendarColumn = 8,
-      cellSize = (width - margin) / (lastWeeks+nextWeeks+2),
+      cellSize = (width - margin) / (lastWeeks+nextWeeks+2 +(lastWeeks+nextWeeks/4)),
       colour = 'green';
 
   let palette = (c) =>[
@@ -121,17 +121,19 @@ export default function chart(id) {
     return result;
   }
 
-  function heightCalc(overide){
-    var suggestedHeight = calendarColumn * cellSize;
+  function heightCalc(override, inset){
+    const suggestedHeight = calendarColumn * cellSize;
+    const _inset = inset ? inset.top + inset.bottom : 0;
+    const extra = DEFAULT_AXIS_PADDING + margin + _inset;
     // check for the stricter constraint
-    if(height && suggestedHeight > (height-margin)){
-      cellSize = (height - margin) / calendarColumn;
+    if(height && suggestedHeight > (height-extra)){
+      cellSize = (height - extra) / calendarColumn;
     }else{
-      height = +overide || suggestedHeight;
+      height = +override || suggestedHeight;
     }
   }
 
-  function dateValueCalc(data){
+  function dateValueCalc(data, inset){
     data = data || [];
     lastWeeks = lastWeeks === 0 && nextWeeks === 0 ? 12 : lastWeeks;
     let retroDate = d => (d.date || d.x);
@@ -171,8 +173,9 @@ export default function chart(id) {
         .filter((d,i) => i>0 && D(d.date).getDate() <= 7 && dayNum(retroDate(d)) === checkStarting );
     xAxisData = monthNames;
 
-    cellSize = (width - margin) / (lastWeeks+nextWeeks+2);
-    heightCalc();
+    const extra = DEFAULT_AXIS_PADDING + margin + inset.left + inset.right;
+    cellSize = (width - extra) / data.length;
+    heightCalc(null, inset);
 
     return data;
   }
@@ -249,7 +252,7 @@ export default function chart(id) {
 
     selection.each(function(data) {
       height = height || Math.round(width * DEFAULT_ASPECT);
-      data = type === 'calendar' ? dateValueCalc(data) : xyzCalc(data);
+      data = type === 'calendar' ? dateValueCalc(data, _inset) : xyzCalc(data);
       let node = select(this);
       // SVG element
       let sid = null;
@@ -356,7 +359,7 @@ export default function chart(id) {
                                         text-anchor: middle;
                                       }
                   ${_impl.self()} text.ylabels {
-                                        text-anchor: middle;
+                                        text-anchor: end;
                                         alignment-baseline: middle;
                                       }
                   ${_impl.self()} .square {
