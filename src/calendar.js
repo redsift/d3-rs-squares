@@ -205,25 +205,25 @@ export default function chart(id) {
       set.add(v.x);
       set.add(v.y);
     })
-    var a = Array.from(set).sort();
-    var sum ={};
-    a.map(y => { sum[y]={} });
+    var a = Array.from(set);
+    var p ={};
+    a.map(v => { p[v]={} });
     a.map(y => {
       a.map(x => {
-        sum[y][x] = 0; 
-        sum[x][y] = 0; 
+        p[y][x] = 0; 
+        p[x][y] = 0; 
         })
     });
     data.forEach((v) => { 
-      sum[v.x][v.y] += v.z;
+      p[v.x][v.y] = dZ(v);
       if(v.x !== v.y){
-        sum[v.y][v.x] += v.z;
+        p[v.y][v.x] = dZ(v);
       }
     });
     matrix = a.map(y => a.map(x => ({
         x: x,
         y: y,
-        z: sum[x][y]
+        z: p[x][y]
       }))
     );
 
