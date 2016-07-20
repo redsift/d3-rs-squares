@@ -80,11 +80,19 @@
     ];
 
     var matrix = [
-      {x: 'aasdfasdfasd', y: 'a', z: 3},
-      {x: 'aasdfasdfasd', y: 'b', z: 1},
+      {x: 'LongKeyyy', y: 'a', z: 3},
+      {x: 'LongKeyyy', y: 'b', z: 1},
       {x: 'a', y: 'b', z: 15},
       {x: 'b', y: 'a', z: 1},
       {x: 'b', y: 'c', z: 1}
+    ];
+
+    var matrix3 = [
+      {x: 'LongKeyyy', y: 'a', z: {value:3}},
+      {x: 'LongKeyyy', y: 'b', z: {value:0}},
+      {x: 'a', y: 'b', z: {value:15}},
+      {x: 'b', y: 'a', z: {value:1}},
+      {x: 'b', y: 'c', z: {value:1}}
     ];
 
     var matrix2 = [
@@ -97,10 +105,11 @@
     ];
 
     
-    var squares = d3_rs_calendar_chart.html('squares').theme('dark').inset({left: 100, top: 24, bottom: 0, right: 0});
+    var squares = d3_rs_calendar_chart.html('squares').theme('dark')
+      .inset({left: 80, top: 80, bottom: 0, right: 0})
+      .height(400);
 
-    var chart = d3_rs_calendar_chart.html('calendar')
-      .type('calendar');
+    var chart = d3_rs_calendar_chart.html('calendar').type('calendar');
 
     // var rstip = d3_rs_tip.tip()
     //     .attr('class', 'd3-tip')
@@ -123,11 +132,13 @@
     //   .on('mouseover', rstip.show)
     //   .on('mouseout', rstip.hide)
 
-    chartElm.datum(points).transition().delay(1500).call(chart.lastWeeks(20));
-    chartElm.datum(pointsXZ).transition().delay(3000).call(chart.lastWeeks(20));
+    chartElm.datum(points).transition().delay(1500).duration(1000).call(chart.lastWeeks(20));
+    chartElm.datum(points).transition().delay(3000).duration(1000).call(chart.lastWeeks(10));
+    // chartElm.datum(pointsXZ).transition().delay(3000).call(chart.lastWeeks(20));
     // chartElm.datum(points).transition().delay(3000).call(chart.width(1200).colour('blue'));
     squareElm.datum(matrix).transition().delay(1500).call(squares.colour('blue'));
-    // squareElm.datum(matrix2).transition().delay(3000).call(squares);
+    squareElm.datum(matrix2).transition().delay(3000).duration(1000).ease(d3_rs_theme.easing()).call(squares);
+    squareElm.datum(matrix3).transition().delay(4000).duration(1000).call(squares.zfield('value'));
     // chartElm.transition().delay(4500).call(chart.width(600));
     // chartElm.transition().delay(6000).call(chart.scale(1.5));
 
