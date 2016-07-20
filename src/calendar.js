@@ -313,11 +313,12 @@ export default function chart(id) {
           .merge(square)
 
 
-      let yAxis = elmS.selectAll('.ylabels').data(yAxisData)
+      let yAxis = elmS.selectAll('.ylabels').data(yAxisData, dI)
       let eYAxis = yAxis.exit();
       yAxis = yAxis.enter()
           .append('text')
           .attr('class','ylabels')
+          .attr('transform', translate( animationDirection*(_inset.left +width), cellSize/2 + DEFAULT_AXIS_PADDING + _inset.top ))
         .merge(yAxis)
 
 
@@ -374,10 +375,13 @@ export default function chart(id) {
       eXAxis.remove()
 
       yAxis.attr('transform', translate( _inset.left, cellSize/2 + DEFAULT_AXIS_PADDING + _inset.top ))
+          .text(yAxisText)
           .attr('y', squareY)
           .attr('x', -DEFAULT_AXIS_PADDING)
           .attr('line-height', cellSize)
-          .text(yAxisText);
+      
+      eYAxis.attr('x', animationDirection*width)
+        .remove()
 
       let _style = style;
       if (_style == null) {
