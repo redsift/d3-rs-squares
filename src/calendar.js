@@ -65,6 +65,9 @@ export default function chart(id) {
       columnId = dI,
       yAxisData = [],
       xAxisData = [],
+      xLabelAnchor = 'middle',
+      xLabelBaseline = '',
+      xLabelTranslate = translate,
       margin = 26,
       width = 800,
       height = null,
@@ -233,6 +236,9 @@ export default function chart(id) {
     xAxisData = a;
     cellSize = (Math.min(width,height) - margin) / (a.length+1);
     columnId = (d,i) => d && d.length > 1 ? d[0].y : i;
+    xLabelAnchor = 'start';
+    xLabelBaseline = 'middle';
+    xLabelTranslate = (x,y) => `${translate(x,y)}rotate(-90)`;
 
     return matrix;
   }
@@ -316,7 +322,7 @@ export default function chart(id) {
       xAxis = xAxis.enter()
         .append('text')
           .attr('class', 'xlabels')
-          .attr('transform', (d,i) => translate( -(_inset.left + (d.order || i)+1 * cellSize), _inset.top ))
+          .attr('transform', (d,i) => xLabelTranslate( -(_inset.left + (d.order || i)+1 * cellSize), _inset.top))
         .merge(xAxis)
 
     
@@ -333,9 +339,9 @@ export default function chart(id) {
           .attr('height', cellSize)
           .attr('x', 0)
 
-      xAxis.attr('transform', (d,i) => translate( _inset.left + (d.order || i) * cellSize, _inset.top ))
+      xAxis.attr('transform', (d,i) => xLabelTranslate( _inset.left + (d.order || i) * cellSize, _inset.top ))
         .text(xAxisText)
-        .attr('x', cellSize/2)
+        .attr(type === 'calendar' ? 'x' : 'y', cellSize/2)
         .style('line-height', cellSize);
 
       yAxis.attr('transform', translate( _inset.left, cellSize/2 + DEFAULT_AXIS_PADDING + _inset.top ))
@@ -372,7 +378,8 @@ export default function chart(id) {
                                         fill: ${display[theme].text}; 
                                       }
                   ${_impl.self()} text.xlabels {
-                                        text-anchor: middle;
+                                        text-anchor: ${xLabelAnchor};
+                                        alignment-baseline: ${xLabelBaseline};
                                       }
                   ${_impl.self()} text.ylabels {
                                         text-anchor: end;
