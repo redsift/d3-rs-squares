@@ -41,7 +41,7 @@ const EMPTY_COLOR = '#f2f2f2';
 
 export default function chart(id) {
 
-  let classed = 'square-chart',
+  let classed = 'squares-chart',
       theme = 'light',
       background = undefined,
       style = undefined,
@@ -158,8 +158,8 @@ export default function chart(id) {
         .range(palette(colour));
 
     columnId = (d,i) => {
-      if(!d && d.length < 1){
-        return i;
+      if(d && d.length < 1){
+        return `s${i}`;
       }
       const t = dateIdFormat(D(retroDate(d[0])))
       return d.length < 7 && isFirstMonth(retroDate(d[0])) ? `${t}b` : t;
