@@ -1,20 +1,20 @@
-# d3-rs-calendar-chart
+# d3-rs-squares
 
-`d3-rs-calendar-chart` easily generate a single character icon.
+`d3-rs-squares` easily generate a single character icon.
 
 ## Builds
 
-[![Circle CI](https://circleci.com/gh/Redsift/d3-rs-calendar-chart.svg?style=svg)](https://circleci.com/gh/Redsift/d3-rs-calendar-chart)
+[![Circle CI](https://circleci.com/gh/Redsift/d3-rs-squares.svg?style=svg)](https://circleci.com/gh/Redsift/d3-rs-squares)
 
 ## Example
 
-[View @redsift/d3-rs-calendar-chart on Codepen](https://....)
+[View @redsift/d3-rs-squares on Codepen](https://....)
 
 ## Usage
 
 ### Browser
 	
-	<script src="//static.redsift.io/reusable/d3-rs-calendar-chart/latest/d3-rs-calendar-chart.umd-es2015.min.js"></script>
+	<script src="//static.redsift.io/reusable/d3-rs-squares/latest/d3-rs-squares.umd-es2015.min.js"></script>
 	<script>
 		var chart = d3_rs_calendar_chart.html().lastWeeks(12);
 		...
@@ -22,13 +22,13 @@
 
 ### ES6
 
-	import { chart } from "@redsift/d3-rs-calendar-chart";
+	import { chart } from "@redsift/d3-rs-squares";
 	let eml = chart.html();
 	...
 	
 ### Require
 
-	var chart = require("@redsift/d3-rs-calendar-chart");
+	var chart = require("@redsift/d3-rs-squares");
 	var eml = chart.html();
 	...
 

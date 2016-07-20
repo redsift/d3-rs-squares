@@ -1,6 +1,6 @@
 {
-  "name": "@redsift/d3-rs-calendar-chart",
-  "version": "0.4.0",
+  "name": "@redsift/d3-rs-squares",
+  "version": "0.5.0",
   "description": "Generates a calendar chart using D3v4.",
   "keywords": [
     "redsift",
@@ -8,20 +8,20 @@
     "calendar",
     "chart"
   ],
-  "homepage": "https://github.com/redsift/d3-rs-calendar-chart",
+  "homepage": "https://github.com/redsift/d3-rs-squares",
   "license": "MIT",
   "author": {
     "name": "Christos Vontas"
   },
-  "main": "distribution/d3-rs-calendar-chart.umd-es2015.js",
+  "main": "distribution/d3-rs-squares.umd-es2015.js",
   "jsnext:main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/redsift/d3-rs-calendar-chart.git"
+    "url": "https://github.com/redsift/d3-rs-squares.git"
   },
   "scripts": {
-    "serve": "gulp -o d3-rs-calendar-chart -g d3-selection serve",
-    "build": "gulp -o d3-rs-calendar-chart -g d3-selection build",
+    "serve": "gulp -o d3-rs-squares -g d3-selection serve",
+    "build": "gulp -o d3-rs-squares -g d3-selection build",
     "pretest": "npm outdated && npm run build",
     "test": "tape 'test/**/*-test.js' && eslint index.js src",
     "version": "json2module package.json > package.js",

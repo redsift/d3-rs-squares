@@ -3,7 +3,7 @@ machine:
     version: 5.10.1
   environment: 
     S3_BUCKET: redsift-static
-    NAME: d3-rs-calendar-chart
+    NAME: d3-rs-squares
 
 checkout: 
   pre:

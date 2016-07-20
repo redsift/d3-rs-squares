@@ -61,7 +61,7 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="//static.redsift.io/reusable/d3-rs-theme/latest/d3-rs-theme.umd-es2015.min.js"></script>
     <script src="//static.redsift.io/reusable/d3-rs-tip/latest/d3-rs-tip.umd-es2015.min.js"></script>
-    <script src="/d3-rs-calendar-chart.umd-es2015.min.js"></script>
+    <script src="/d3-rs-squares.umd-es2015.min.js"></script>
     <script>
 
     'use strict';
@@ -105,19 +105,19 @@
     ];
 
     
-    var squares = d3_rs_calendar_chart.html('squares').theme('dark')
+    var squares = d3_rs_squares.html('squares').theme('dark')
       .inset({left: 80, top: 80, bottom: 0, right: 0})
       .height(400);
 
-    var chart = d3_rs_calendar_chart.html('calendar').type('calendar');
+    var chart = d3_rs_squares.html('calendar').type('calendar');
 
     // var rstip = d3_rs_tip.tip()
     //     .attr('class', 'd3-tip')
     //     .direction('n')
         // .html((d) => d3.timeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value);
 
-    d3.select('#elm').datum([]).call(d3_rs_calendar_chart.html('empty').type('calendar'));
-    d3.select('#elm').datum(null).call(d3_rs_calendar_chart.html('empty-squares'));
+    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty').type('calendar'));
+    d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-squares'));
     
     var chartElm = d3.select('#elm')
       .datum(points)
@@ -134,11 +134,11 @@
 
     chartElm.datum(points).transition().delay(1500).duration(1000).call(chart.lastWeeks(20));
     chartElm.datum(points).transition().delay(3000).duration(1000).call(chart.lastWeeks(10));
-    // chartElm.datum(pointsXZ).transition().delay(3000).call(chart.lastWeeks(20));
+    chartElm.datum(pointsXZ).transition().delay(4500).duration(1000).call(chart.lastWeeks(20));
     // chartElm.datum(points).transition().delay(3000).call(chart.width(1200).colour('blue'));
     squareElm.datum(matrix).transition().delay(1500).call(squares.colour('blue'));
     squareElm.datum(matrix2).transition().delay(3000).duration(1000).ease(d3_rs_theme.easing()).call(squares);
-    squareElm.datum(matrix3).transition().delay(4000).duration(1000).call(squares.zfield('value'));
+    squareElm.datum(matrix3).transition().delay(4500).duration(1000).call(squares.zfield('value'));
     // chartElm.transition().delay(4500).call(chart.width(600));
     // chartElm.transition().delay(6000).call(chart.scale(1.5));
 

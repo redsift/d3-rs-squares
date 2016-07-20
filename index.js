@@ -5,4 +5,4 @@ export {
 
 export {
   default as html
-} from "./src/calendar.js";
+} from "./src/squares.js";
