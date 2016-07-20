@@ -152,7 +152,13 @@ export default function chart(id) {
         .domain(extent(dataByDate.entries(), retroValue))
         .range(palette(colour));
 
-    columnId = (d,i) => d && d.length > 1 ? dateIdFormat(D(retroDate(d[0]))) : i;
+    columnId = (d,i) => {
+      if(!d && d.length < 1){
+        return i;
+      }
+      const t = dateIdFormat(D(retroDate(d[0])))
+      return d.length < 7 && isFirstMonth(retroDate(d[0])) ? `${t}b` : t;
+    };
     // used for squares and yAxis
     squareY = d => {
       const v = d.x || d;
