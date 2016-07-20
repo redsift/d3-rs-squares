@@ -286,13 +286,20 @@ export default function chart(id) {
       column = column.enter()
           .append('g')
           .attr('id', columnId)
+          .attr('transform', (_,i) => translate( -(_inset.left + (++i * cellSize)), _inset.top + DEFAULT_AXIS_PADDING))
         .merge(column);
 
-      var square = column.selectAll('.square').data((d) => d)
+      var square = column.selectAll('.square').data(dI, dX)
       square.exit().remove();
       square = square.enter()
           .append('rect')
             .attr('class', 'square')
+            .attr('width', cellSize)
+            .attr('height', cellSize)
+            .attr('data-x', dX)
+            .attr('x', -(_inset.left + margin + cellSize))
+            .attr('y', squareY)
+            .attr('fill', d => d.z ? colorScale(d.z) : EMPTY_COLOR)
           .merge(square);
 
 
@@ -309,6 +316,7 @@ export default function chart(id) {
       xAxis = xAxis.enter()
         .append('text')
           .attr('class', 'xlabels')
+          .attr('transform', (d,i) => translate( -(_inset.left + (d.order || i)+1 * cellSize), _inset.top ))
         .merge(xAxis)
 
     
@@ -319,13 +327,11 @@ export default function chart(id) {
         yAxis = yAxis.transition(context);
       }
       //TODO: push to the left for long names on xAxis
-      console.log(_inset.left)
       column.attr('transform', (_,i) => translate( _inset.left + (i * cellSize), _inset.top + DEFAULT_AXIS_PADDING));
-      square.attr('width', cellSize)
+      square.attr('y', squareY)
+          .attr('width', cellSize)
           .attr('height', cellSize)
-          .attr('data-x', dX)
-          .attr('y', squareY)
-          .style('fill', d => d.z ? colorScale(d.z) : '');
+          .attr('x', 0)
 
       xAxis.attr('transform', (d,i) => translate( _inset.left + (d.order || i) * cellSize, _inset.top ))
         .text(xAxisText)
@@ -373,7 +379,6 @@ export default function chart(id) {
                                         alignment-baseline: middle;
                                       }
                   ${_impl.self()} .square {
-                                        fill: ${EMPTY_COLOR};
                                         stroke: ${display[theme].background};
                                         stroke-width: .125rem;
                   }
