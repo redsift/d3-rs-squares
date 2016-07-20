@@ -202,8 +202,8 @@ export default function chart(id) {
     // get unique x and y
     let set = new Set();
     data.forEach((v)=>{  
-      set.add(v.x);
-      set.add(v.y);
+      set.add(dX(v));
+      set.add(dY(v));
     })
     var a = Array.from(set);
     var p ={};
@@ -215,9 +215,9 @@ export default function chart(id) {
         })
     });
     data.forEach((v) => { 
-      p[v.x][v.y] = zfield ? dZ(v)[zfield] : dZ(v);
-      if(v.x !== v.y){
-        p[v.y][v.x] = zfield ? dZ(v)[zfield] : dZ(v);
+      p[dX(v)][dY(v)] = zfield ? dZ(v)[zfield] : dZ(v);
+      if(dX(v) !== dY(v)){
+        p[dY(v)][dX(v)] = zfield ? dZ(v)[zfield] : dZ(v);
       }
     });
     matrix = a.map(y => a.map(x => ({
@@ -238,7 +238,7 @@ export default function chart(id) {
     const _w = width - (DEFAULT_AXIS_PADDING + margin + inset.left + inset.right);
     const _h = height - (DEFAULT_AXIS_PADDING + margin + inset.top + inset.bottom);
     cellSize = Math.min(_w,_h) / (a.length+1);
-    columnId = (d,i) => d && d.length > 1 ? d[0].y : i;
+    columnId = (d,i) => d && d.length > 1 ? dY(d[0]) : i;
     xLabelAnchor = 'start';
     xLabelBaseline = 'middle';
     xLabelTranslate = (x,y) => `${translate(x,y)}rotate(-90)`;
