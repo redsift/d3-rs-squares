@@ -50,7 +50,7 @@
   </style>
   </head>
   <body>
-    <h1>SVG Calendar Demo</h2>
+    <h1>SVG Squares Demo</h2>
     <div id="elm">
 
     </div>
@@ -66,17 +66,17 @@
 
     'use strict';
     var points = [
-      {d: '2016-05-01', v: 10},
-      {d: '2016-05-01', v: 20},
-      {d: '2016-05-05', v: 5},
-      {d: '2016-06-02', v: 15}
+      {d: 1462057200000, v: 10},
+      {d: 1462057200000, v: 20},
+      {d: 1462402800000, v: 5},
+      {d: 1464822000000, v: 15}
     ];
 
     var pointsXZ = [
-      {x: '2016-07-01', z: 10},
-      {x: '2016-07-01', z: 20},
-      {x: '2016-07-05', z: 5},
-      {x: '2016-06-02', z: 15}
+      {x: 1467327600000, z: 10},
+      {x: 1467327600000, z: 20},
+      {x: 1467673200000, z: 5},
+      {x: 1464822000000, z: 15}
     ];
 
     var matrix = [
@@ -116,7 +116,7 @@
     //     .direction('n')
         // .html((d) => d3.timeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value);
 
-    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty').type('calendar').starting('monday'));
+    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty').type('calendar').starting('wednesday'));
     d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-squares'));
     
     var chartElm = d3.select('#elm')

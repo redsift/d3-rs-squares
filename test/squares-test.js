@@ -53,10 +53,10 @@ tape("html() testing parameters", function(t) {
 
     // with some data
     var data = [ 
-      {d: '2016-05-01', v: 10},
-      {d: '2016-05-01', v: 20},
-      {d: '2016-05-05', v: 5},
-      {d: '2016-06-02', v: 15} ];
+      {d: 1462057200000, v: 10},
+      {d: 1462057200000, v: 20},
+      {d: 1462143600000, v: 5},
+      {d: 1464822000000, v: 15} ];
     el.datum([]).call(squares.html('calendar').type('calendar').lastWeeks(lw));
     t.equal(el.selectAll('#calendar > g').size(), 1+lw+lw/4);
     

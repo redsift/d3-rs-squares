@@ -16,7 +16,7 @@
 	
 	<script src="//static.redsift.io/reusable/d3-rs-squares/latest/d3-rs-squares.umd-es2015.min.js"></script>
 	<script>
-		var chart = d3_rs_calendar_chart.html().lastWeeks(12);
+		var chart = d3_rs_squares.html().lastWeeks(12);
 		...
 	</script>
 
