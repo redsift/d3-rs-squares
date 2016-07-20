@@ -145,8 +145,8 @@ export default function chart(id) {
   function dateValueCalc(data, inset){
     data = data || [];
     lastWeeks = lastWeeks === 0 && nextWeeks === 0 ? 12 : lastWeeks;
-    let retroDate = d => d ? (d.date || d.x) : null;
-    let retroValue = d => (+d.value || +(dZ(d)));
+    let retroDate = d => d ? (d.d || d.x) : null;
+    let retroValue = d => (+d.v || +(dZ(d)));
     const checkStarting = dayWeekNum(starting(Date.now()));
     let dataByDate = nest()
       .key(d => dateFormat(D(retroDate(d))))
