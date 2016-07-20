@@ -1,5 +1,5 @@
 export var name = "@redsift/d3-rs-squares";
-export var version = "0.5.1";
+export var version = "0.5.2";
 export var description = "Generates a calendar chart using D3v4.";
 export var keywords = ["redsift","d3","squares","cooccurence","calendar","chart"];
 export var homepage = "https://github.com/redsift/d3-rs-squares";
