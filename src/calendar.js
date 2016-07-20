@@ -50,7 +50,9 @@ export default function chart(id) {
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
       D = d => new Date(d),
-      dayNum = d => D(d).getDay(),
+      dayWeekNum = d => D(d).getDay(),
+      dayMonthNum = d => D(d).getDate(),
+      isFirstMonth = d => dayMonthNum(d) === 1,
       translate = (x,y) => `translate(${x},${y})`,
       colorScale = () => EMPTY_COLOR,
       squareY = (_,i) => i * cellSize,
@@ -103,12 +105,14 @@ export default function chart(id) {
     timeSundays(sunNumB, sunNumE)
         .map(sunday =>{
           let temp = [];
-          let m1 = false;
           timeSide(sunday).map(d => {
-              if(D(d).getDate() === 1 && temp.length > 0){
-                m1 = true;
-                result.push(temp.slice(0));
-                temp = [];
+              if(isFirstMonth(d)){
+                if(temp.length > 0){
+                  result.push(temp.slice(0));
+                  temp = [];
+                }else {
+                  result.push([]);
+                }
               }
               temp.push({ 
                 x: dateFormat(d),
@@ -122,23 +126,23 @@ export default function chart(id) {
   }
 
   function heightCalc(override, inset){
-    const suggestedHeight = calendarColumn * cellSize;
     const _inset = inset ? inset.top + inset.bottom : 0;
     const extra = DEFAULT_AXIS_PADDING + margin + _inset;
+    const suggestedHeight = calendarColumn * cellSize;
     // check for the stricter constraint
     if(height && suggestedHeight > (height-extra)){
       cellSize = (height - extra) / calendarColumn;
     }else{
-      height = +override || suggestedHeight;
+      height = +override || (suggestedHeight + extra);
     }
   }
 
   function dateValueCalc(data, inset){
     data = data || [];
     lastWeeks = lastWeeks === 0 && nextWeeks === 0 ? 12 : lastWeeks;
-    let retroDate = d => (d.date || d.x);
+    let retroDate = d => d ? (d.date || d.x) : null;
     let retroValue = d => (+d.value || +d.z);
-    const checkStarting = dayNum(starting(Date.now()));
+    const checkStarting = dayWeekNum(starting(Date.now()));
     let dataByDate = nest()
       .key(d => dateFormat(D(retroDate(d))))
       .rollup(d => sum(d, retroValue))
@@ -153,10 +157,10 @@ export default function chart(id) {
     squareY = d => {
       const v = d.x || d;
       let e = 0;
-      if(dayNum(v) < checkStarting) {
-        e = 6 - dayNum(v)
+      if(dayWeekNum(v) < checkStarting) {
+        e = 6 - dayWeekNum(v)
       }else{
-        e = dayNum(v) - checkStarting
+        e = dayWeekNum(v) - checkStarting
       }
       return e * cellSize
 
@@ -170,7 +174,7 @@ export default function chart(id) {
     data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
     var monthNames = data
         .map((d,i) => ({order: i, date: retroDate(d[0])}))
-        .filter((d,i) => i>0 && D(d.date).getDate() <= 7 && dayNum(retroDate(d)) === checkStarting );
+        .filter((d,i) => i>0 && d && dayMonthNum(d.date) <= 7 && dayWeekNum(retroDate(d)) === checkStarting );
     xAxisData = monthNames;
 
     const extra = DEFAULT_AXIS_PADDING + margin + inset.left + inset.right;
