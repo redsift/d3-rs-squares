@@ -194,7 +194,7 @@ export default function chart(id) {
     return data;
   }
 
-  function xyzCalc(data){
+  function xyzCalc(data, inset){
     if(!data || data.length < 1){
       data = [{x:'a',y:'b',z:0}];
     }
@@ -235,7 +235,9 @@ export default function chart(id) {
         .range(palette(colour))
     yAxisData = a;
     xAxisData = a;
-    cellSize = (Math.min(width,height) - margin) / (a.length+1);
+    const _w = width - (DEFAULT_AXIS_PADDING + margin + inset.left + inset.right);
+    const _h = height - (DEFAULT_AXIS_PADDING + margin + inset.top + inset.bottom);
+    cellSize = Math.min(_w,_h) / (a.length+1);
     columnId = (d,i) => d && d.length > 1 ? d[0].y : i;
     xLabelAnchor = 'start';
     xLabelBaseline = 'middle';
@@ -269,7 +271,7 @@ export default function chart(id) {
 
     selection.each(function(data) {
       height = height || Math.round(width * DEFAULT_ASPECT);
-      data = type === 'calendar' ? dateValueCalc(data, _inset) : xyzCalc(data);
+      data = type === 'calendar' ? dateValueCalc(data, _inset) : xyzCalc(data, _inset);
       let node = select(this);
       // SVG element
       let sid = null;
