@@ -36,7 +36,22 @@ const DEFAULT_ASPECT = 160 / 420;
 const DEFAULT_INSET = 24;
 const DEFAULT_AXIS_PADDING = 8;
 const EMPTY_COLOR = '#f2f2f2';
-
+const timeMap = {
+  sunday: [timeSunday, timeSundays],
+  monday: [timeMonday, timeMondays],
+  tuesday: [timeTuesday, timeTuesdays],
+  wednesday: [timeWednesday, timeWednesdays],
+  thursday: [timeThursday, timeThursdays],
+  friday: [timeFriday, timeFridays],
+  saturday: [timeSaturday, timeSaturdays],
+  utcSunday: [utcSunday, utcSundays],
+  utcMonday: [utcMonday, utcMondays],
+  utcTuesday: [utcTuesday, utcTuesdays],
+  utcWednesday: [utcWednesday, utcWednesdays],
+  utcThursday: [utcThursday, utcThursdays],
+  utcFriday: [utcFriday, utcFridays],
+  utcSaturday: [utcSaturday, utcSaturdays],
+}
 
 export default function chart(id) {
 
@@ -46,7 +61,7 @@ export default function chart(id) {
       style = undefined,
       inset = null,
       zfield = null,
-      starting = timeSunday,
+      starting = 'sunday',
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
       D = d => new Date(d),
@@ -88,28 +103,30 @@ export default function chart(id) {
 
   function fullCalendar(lw, nw, dataByDate){
     var today = Date.now();
+    const tMD = timeMap[starting][0];
+    const tMDs = timeMap[starting][1];
 
     var sunNumB = lw > 0 ? timeWeek.offset(today, -lw-1) : today;
     var sunNumE = nw > 0 ? timeWeek.offset(today, lw > 0 ? nw : nw+1) : today;
     var timeDaysPast = s => timeDays(
-      Math.max(timeSunday.offset(today, -lw), s),
+      Math.max(tMD.offset(today, -lw), s),
       Math.min(today, timeWeek.offset(s, 1)));
     var timeDaysFuture = s => timeDays(
       Math.max(timeDay.offset(today, -1), timeWeek.offset(s, -1)),
       Math.min(timeWeek.offset(today, nw), s));
     var timeDaysBoth = s => timeDays(
-      Math.max(timeSunday.offset(timeDay.offset(today, -1), -lw), s),
-      Math.min(timeSunday.offset(today, nw), timeWeek.offset(s, 1)));
+      Math.max(tMD.offset(timeDay.offset(today, -1), -lw), s),
+      Math.min(tMD.offset(today, nw), timeWeek.offset(s, 1)));
     var timeSide = (lw > 0 && nw > 0) ? timeDaysBoth :
                     (lw > 0) ? timeDaysPast :
                       (nw > 0) ? timeDaysFuture :
                         timeDays(today,today);
 
     var result = [];
-    timeSundays(sunNumB, sunNumE)
-        .map(sunday =>{
+    tMDs(sunNumB, sunNumE)
+        .map(weekDay =>{
           let temp = [];
-          timeSide(sunday).map(d => {
+          timeSide(weekDay).map(d => {
               if(isFirstMonth(d)){
                 if(temp.length > 0){
                   result.push(temp.slice(0));
@@ -146,7 +163,8 @@ export default function chart(id) {
     lastWeeks = lastWeeks === 0 && nextWeeks === 0 ? 12 : lastWeeks;
     let retroDate = d => d ? (d.d || d.x) : null;
     let retroValue = d => (+d.v || +(dZ(d)));
-    const checkStarting = dayWeekNum(starting(Date.now()));
+    const tMD = timeMap[starting][0];
+    const checkStarting = dayWeekNum(tMD(Date.now()));
     let dataByDate = nest()
       .key(d => dateFormat(D(retroDate(d))))
       .rollup(d => sum(d, retroValue))
@@ -179,7 +197,7 @@ export default function chart(id) {
     xAxisText = d => d3TimeFormat.timeFormat('%b')(D(retroDate(d)))
     yAxisText = d => d3TimeFormat.timeFormat('%a')(D(d))[0]
 
-    yAxisData = timeDays(starting.offset(starting(Date.now()), -1), starting(Date.now()))
+    yAxisData = timeDays(tMD.offset(tMD(Date.now()), -1), tMD(Date.now()))
 
     data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
     var monthNames = data
@@ -480,7 +498,7 @@ export default function chart(id) {
   };
 
   _impl.starting = function(_) {
-    return arguments.length ? (starting = _, _impl) : starting;
+    return arguments.length && timeMap.hasOwnProperty(_) ? (starting = _, _impl) : starting;
   };
 
   _impl.inset = function(_) {
