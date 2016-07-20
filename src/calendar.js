@@ -184,8 +184,8 @@ export default function chart(id) {
 
     data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
     var monthNames = data
-        .map((d,i) => ({order: i, date: retroDate(d[0])}))
-        .filter((d,i) => i>0 && d && dayMonthNum(d.date) <= 7 && dayWeekNum(retroDate(d)) === checkStarting );
+        .map((d,i) => ({order: i, d: retroDate(d[0])}))
+        .filter((d,i) => i>0 && d && dayMonthNum(d.d) <= 7 && dayWeekNum(retroDate(d)) === checkStarting );
     xAxisData = monthNames;
 
     const extra = DEFAULT_AXIS_PADDING + margin + inset.left + inset.right;
@@ -322,7 +322,7 @@ export default function chart(id) {
         .merge(yAxis)
 
 
-      let xAxis = elmS.selectAll('.xlabels').data(xAxisData, d => (d.date || d))
+      let xAxis = elmS.selectAll('.xlabels').data(xAxisData, d => (d.d || d))
       let eXAxis = xAxis.exit();
       xAxis = xAxis.enter()
         .append('text')
@@ -365,6 +365,7 @@ export default function chart(id) {
         xAxis.attr('x', cellSize/2)
       }else{
         xAxis.attr('y', cellSize/2)
+        xAxis.attr('x', 0)
       }
 
       if(type === 'calendar'){
