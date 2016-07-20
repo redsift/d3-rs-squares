@@ -29,8 +29,7 @@ import {
   presentation10,
   display,
   fonts,
-  widths,
-  dashes
+  widths
 } from '@redsift/d3-rs-theme';
 
 const DEFAULT_ASPECT = 160 / 420;
@@ -421,7 +420,7 @@ export default function chart(id) {
                                       }
                   ${_impl.self()} .square {
                                         stroke: ${display[theme].background};
-                                        stroke-width: .125rem;
+                                        stroke-width: ${widths.grid};
                   }
                 `;
 
