@@ -290,62 +290,87 @@ export default function chart(id) {
         elmS = rootG.append('g').attr('class', classed).attr('id', id);
       }
 
-      var column = elmS.selectAll('g').data(data, columnId);
-      column.exit().remove();
+      let column = elmS.selectAll('g').data(data, columnId);
+      let eColumn = column.exit();
       column = column.enter()
           .append('g')
           .attr('id', columnId)
-          .attr('transform', (_,i) => translate( -(_inset.left + (++i * cellSize)), _inset.top + DEFAULT_AXIS_PADDING))
+          .attr('transform', (_,i) => translate( animationDirection*(_inset.left + (++i * cellSize)+width), _inset.top + DEFAULT_AXIS_PADDING))
         .merge(column);
 
-      var square = column.selectAll('.square').data(dI, dX)
-      square.exit().remove();
+      let square = column.selectAll('.square').data(dI, dX)
+      let eSquare = square.exit();
       square = square.enter()
           .append('rect')
             .attr('class', 'square')
             .attr('width', cellSize)
             .attr('height', cellSize)
             .attr('data-x', dX)
-            .attr('x', -(_inset.left + margin + cellSize))
+            .attr('x', animationDirection*(_inset.left + margin + width))
             .attr('y', squareY)
-            .attr('fill', d => d.z ? colorScale(d.z) : EMPTY_COLOR)
-          .merge(square);
+            .attr('fill', d => dZ(d) ? colorScale(dZ(d)) : EMPTY_COLOR)
+          .merge(square)
 
 
-      var yAxis = elmS.selectAll('.ylabels').data(yAxisData)
-      yAxis.exit().remove();
+      let yAxis = elmS.selectAll('.ylabels').data(yAxisData)
+      let eYAxis = yAxis.exit();
       yAxis = yAxis.enter()
           .append('text')
           .attr('class','ylabels')
         .merge(yAxis)
 
 
-      var xAxis = elmS.selectAll('.xlabels').data(xAxisData, d => (d.date || d))
-      xAxis.exit().remove();
+      let xAxis = elmS.selectAll('.xlabels').data(xAxisData, d => (d.date || d))
+      let eXAxis = xAxis.exit();
       xAxis = xAxis.enter()
         .append('text')
           .attr('class', 'xlabels')
-          .attr('transform', (d,i) => xLabelTranslate( -(_inset.left + (d.order || i)+1 * cellSize), _inset.top))
+          .attr('transform', (d,i) => xLabelTranslate( animationDirection*(_inset.left + (d.order || i) * cellSize + width), _inset.top))
         .merge(xAxis)
 
-    
       if (transition === true) {
         column = column.transition(context);
+        eColumn = eColumn.transition(context);
         square = square.transition(context);
+        eSquare = eSquare.transition(context);
         xAxis = xAxis.transition(context);
+        eXAxis = eXAxis.transition(context);
         yAxis = yAxis.transition(context);
+        eYAxis = eYAxis.transition(context);
       }
-      //TODO: push to the left for long names on xAxis
+
       column.attr('transform', (_,i) => translate( _inset.left + (i * cellSize), _inset.top + DEFAULT_AXIS_PADDING));
+      eColumn.attr('transform', (_,i) => translate( animationDirection*(_inset.left + (++i * cellSize)+width), _inset.top + DEFAULT_AXIS_PADDING))
+        .remove();
       square.attr('y', squareY)
           .attr('width', cellSize)
           .attr('height', cellSize)
           .attr('x', 0)
+          .attr('fill', d => dZ(d) ? colorScale(dZ(d)) : EMPTY_COLOR)
 
-      xAxis.attr('transform', (d,i) => xLabelTranslate( _inset.left + (d.order || i) * cellSize, _inset.top ))
+      eSquare.attr('width', cellSize)
+            .attr('height', cellSize)
+            .attr('data-x', dX)
+            .attr('x', animationDirection*(_inset.left + margin + width))
+            .attr('y', squareY)
+            .attr('fill', d => dZ(d) ? colorScale(dZ(d)) : EMPTY_COLOR)
+          .remove()
+
+      xAxis.attr('transform', (d,i) => xLabelTranslate( _inset.left + (d.order || i) * cellSize, _inset.top))
         .text(xAxisText)
-        .attr(type === 'calendar' ? 'x' : 'y', cellSize/2)
-        .style('line-height', cellSize);
+        .attr('line-height', cellSize);
+      if(type === 'calendar'){
+        xAxis.attr('x', cellSize/2)
+      }else{
+        xAxis.attr('y', cellSize/2)
+      }
+
+      if(type === 'calendar'){
+        eXAxis.attr('x', animationDirection*width)
+      }else{
+        eXAxis.attr('x', height)
+      }
+      eXAxis.remove()
 
       yAxis.attr('transform', translate( _inset.left, cellSize/2 + DEFAULT_AXIS_PADDING + _inset.top ))
           .attr('y', squareY)
