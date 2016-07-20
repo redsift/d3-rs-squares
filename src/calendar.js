@@ -376,7 +376,7 @@ export default function chart(id) {
       yAxis.attr('transform', translate( _inset.left, cellSize/2 + DEFAULT_AXIS_PADDING + _inset.top ))
           .attr('y', squareY)
           .attr('x', -DEFAULT_AXIS_PADDING)
-          .style('line-height', cellSize)
+          .attr('line-height', cellSize)
           .text(yAxisText);
 
       let _style = style;
