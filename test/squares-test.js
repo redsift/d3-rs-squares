@@ -33,37 +33,32 @@ tape("html() generates sth with no data calendar", function(t) {
 });
 
 tape("html() testing parameters", function(t) {
-    var host = squares.html();
     var el = d3.select('#test');
     //last weeks
     var lw = 12;
-    host = squares.html().lastWeeks(lw);
-    el.datum([]).call(host);
+    el.datum([]).call(squares.html('calendar').type('calendar').lastWeeks(lw));
     t.equal(el.selectAll('svg').size(), 1);
-    t.equal(el.selectAll('.svg-svg > g').size(), lw+1);
+    t.equal(el.selectAll('#calendar > g').size(), 1+lw+lw/4);
 
     //next weeks
     var nw = 12;
-    host = squares.html().nextWeeks(nw);
-    el.datum([]).call(host);
+    el.datum([]).call(squares.html('calendar').type('calendar').nextWeeks(nw));
     t.equal(el.selectAll('svg').size(), 1);
-    t.equal(el.selectAll('.svg-svg > g').size(), nw+1);
+    t.equal(el.selectAll('#calendar > g').size(), 1+nw+nw/4);
 
     //both next and last weeks
-    host = squares.html().lastWeeks(lw).nextWeeks(nw);
-    el.datum([]).call(host);
+    el.datum([]).call(squares.html('calendar').type('calendar').lastWeeks(lw).nextWeeks(nw));
     t.equal(el.selectAll('svg').size(), 1);
-    t.equal(el.selectAll('.svg-svg > g').size(), lw+nw+1);
+    t.equal(el.selectAll('#calendar > g').size(), 1+lw+nw+(lw+nw)/4);
 
     // with some data
-    var data = [ {date: '2016-05-01', value: 10},
-      {date: '2016-05-01', value: 20},
-      {date: '2016-05-05', value: 5},
-      {date: '2016-06-02', value: 15} ];
-    host = squares.html().lastWeeks(lw);
-    el.datum(data).call(host);
-    t.equal(el.selectAll('svg').size(), 1);
-    t.equal(el.selectAll('.svg-svg > g').size(), lw+1);
+    var data = [ 
+      {d: '2016-05-01', v: 10},
+      {d: '2016-05-01', v: 20},
+      {d: '2016-05-05', v: 5},
+      {d: '2016-06-02', v: 15} ];
+    el.datum([]).call(squares.html('calendar').type('calendar').lastWeeks(lw));
+    t.equal(el.selectAll('#calendar > g').size(), 1+lw+lw/4);
     
     t.end();
 })
