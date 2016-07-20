@@ -46,6 +46,7 @@ export default function chart(id) {
       background = undefined,
       style = undefined,
       inset = null,
+      zfield = 'z',
       starting = timeSunday,
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
@@ -59,7 +60,7 @@ export default function chart(id) {
       dI = d => d,
       dX = d => d.x,
       dY = d => d.y,
-      dZ = d => d.z,
+      dZ = d => d[zfield],
       xAxisText = dI,
       yAxisText = dI, 
       columnId = dI,
@@ -144,7 +145,7 @@ export default function chart(id) {
     data = data || [];
     lastWeeks = lastWeeks === 0 && nextWeeks === 0 ? 12 : lastWeeks;
     let retroDate = d => d ? (d.date || d.x) : null;
-    let retroValue = d => (+d.value || +d.z);
+    let retroValue = d => (+d.value || +(dZ(d)));
     const checkStarting = dayWeekNum(starting(Date.now()));
     let dataByDate = nest()
       .key(d => dateFormat(D(retroDate(d))))
@@ -450,6 +451,10 @@ export default function chart(id) {
 
   _impl.inset = function(_) {
     return arguments.length ? (inset = _, _impl) : inset;
+  };
+
+  _impl.zfield = function(_) {
+    return arguments.length ? (zfield = _, _impl) : zfield;
   };
 
   return _impl;
