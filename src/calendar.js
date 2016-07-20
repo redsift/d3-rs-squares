@@ -69,8 +69,9 @@ export default function chart(id) {
       xLabelAnchor = 'middle',
       xLabelBaseline = '',
       xLabelTranslate = translate,
+      animationDirection = -1,
       margin = 26,
-      width = 800,
+      width = 600,
       height = null,
       lastWeeks = 0,
       nextWeeks = 0,
@@ -453,10 +454,12 @@ export default function chart(id) {
   }; 
 
   _impl.lastWeeks = function(_) {
+    animationDirection = -1;
     return arguments.length ? (lastWeeks = +_, _impl) : lastWeeks;
   };
 
   _impl.nextWeeks = function(_) {
+    animationDirection = 1;
     return arguments.length ? (nextWeeks = +_, _impl) : nextWeeks;
   };
 
