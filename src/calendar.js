@@ -46,7 +46,7 @@ export default function chart(id) {
       background = undefined,
       style = undefined,
       inset = null,
-      zfield = 'z',
+      zfield = null,
       starting = timeSunday,
       dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
       dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
@@ -60,7 +60,7 @@ export default function chart(id) {
       dI = d => d,
       dX = d => d.x,
       dY = d => d.y,
-      dZ = d => d[zfield],
+      dZ = d => d.z,
       xAxisText = dI,
       yAxisText = dI, 
       columnId = dI,
@@ -216,9 +216,9 @@ export default function chart(id) {
         })
     });
     data.forEach((v) => { 
-      p[v.x][v.y] = dZ(v);
+      p[v.x][v.y] = zfield ? dZ(v)[zfield] : dZ(v);
       if(v.x !== v.y){
-        p[v.y][v.x] = dZ(v);
+        p[v.y][v.x] = zfield ? dZ(v)[zfield] : dZ(v);
       }
     });
     matrix = a.map(y => a.map(x => ({
