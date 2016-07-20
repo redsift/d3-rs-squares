@@ -223,11 +223,11 @@ export default function chart(id) {
       set.add(dX(v));
       set.add(dY(v));
     })
-    var a = Array.from(set);
+    var nodes = Array.from(set);
     var p ={};
-    a.map(v => { p[v]={} });
-    a.map(y => {
-      a.map(x => {
+    nodes.map(v => { p[v]={} });
+    nodes.map(y => {
+      nodes.map(x => {
         p[y][x] = 0; 
         p[x][y] = 0; 
         })
@@ -238,7 +238,7 @@ export default function chart(id) {
         p[dY(v)][dX(v)] = zfield ? dZ(v)[zfield] : dZ(v);
       }
     });
-    matrix = a.map(y => a.map(x => ({
+    matrix = nodes.map(y => nodes.map(x => ({
         x: x,
         y: y,
         z: p[x][y]
@@ -251,11 +251,11 @@ export default function chart(id) {
           max(matrix, d => max(d, dZ))
           ])
         .range(palette(colour))
-    yAxisData = a;
-    xAxisData = a;
+    yAxisData = nodes;
+    xAxisData = nodes;
     const _w = width - (DEFAULT_AXIS_PADDING + margin + inset.left + inset.right);
     const _h = height - (DEFAULT_AXIS_PADDING + margin + inset.top + inset.bottom);
-    cellSize = Math.min(_w,_h) / (a.length+1);
+    cellSize = Math.min(_w,_h) / (nodes.length+1);
     columnId = (d,i) => d && d.length > 1 ? dY(d[0]) : i;
     xLabelAnchor = 'start';
     xLabelBaseline = 'middle';
