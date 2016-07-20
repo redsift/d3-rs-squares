@@ -1,6 +1,6 @@
 export {
   version
-} from "./package.js";
+} from "./package.json";
 
 
 export {
