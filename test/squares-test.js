@@ -1,8 +1,8 @@
 var tape = require("@redsift/tape-reel")("<div id='test'></div>");
     d3 = require("d3-selection"),
     squares = require("../");
-//     svg = require("@redsift/d3-rs-svg"),
-tape("html() generates sth with no data squares", function(t) {
+
+tape("sqaures html() generates sth with no data", function(t) {
     var host = squares.html();
     var el = d3.select('#test');
 
@@ -17,7 +17,7 @@ tape("html() generates sth with no data squares", function(t) {
     t.end();
 });
 
-tape("html() generates sth with no data calendar", function(t) {
+tape("calendar html() generates sth with no data", function(t) {
     var host = squares.html().type('calendar');
     var el = d3.select('#test');
 
@@ -32,7 +32,7 @@ tape("html() generates sth with no data calendar", function(t) {
     t.end();
 });
 
-tape("html() testing parameters", function(t) {
+tape("calendar html() testing parameters", function(t) {
     var el = d3.select('#test');
     //last weeks
     var lw = 12;

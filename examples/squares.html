@@ -72,13 +72,6 @@
       {d: 1464822000000, v: 15}
     ];
 
-    var pointsXZ = [
-      {x: 1467327600000, z: 10},
-      {x: 1467327600000, z: 20},
-      {x: 1467673200000, z: 5},
-      {x: 1464822000000, z: 15}
-    ];
-
     var matrix = [
       {x: 'LongKeyyy', y: 'a', z: 3},
       {x: 'LongKeyyy', y: 'b', z: 1},
@@ -111,10 +104,10 @@
 
     var chart = d3_rs_squares.html('calendar').type('calendar');
 
-    // var rstip = d3_rs_tip.tip()
-    //     .attr('class', 'd3-tip')
-    //     .direction('n')
-        // .html((d) => d3.timeFormat('%d %b %Y')(new Date(d.date)) + ': ' + d.value);
+    var rstip = d3_rs_tip.body()
+        .attr('class', 'd3-tip')
+        .direction('n')
+        .html(d => (d.y ? d.x+','+d.y : d3.timeFormat('%d %b %Y')(new Date(d.x))) + ': ' + d.z);
 
     d3.select('#elm').datum([]).call(d3_rs_squares.html('empty').type('calendar').starting('wednesday'));
     d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-squares'));
@@ -127,20 +120,19 @@
       .datum(matrix)
       .call(squares);
 
-    // d3.select('svg').call(rstip);
-    // d3.selectAll('.day')
-    //   .on('mouseover', rstip.show)
-    //   .on('mouseout', rstip.hide)
+    d3.select('svg').call(rstip);
+    d3.selectAll('.square')
+      .on('mouseover', rstip.show)
+      .on('mouseout', rstip.hide)
 
-    chartElm.datum(points).transition().delay(1500).duration(1000).call(chart.lastWeeks(20));
+    chartElm.datum(points).transition().delay(1500).duration(1000).ease(d3_rs_theme.easing()).call(chart.lastWeeks(20));
     chartElm.datum(points).transition().delay(3000).duration(1000).call(chart.lastWeeks(10));
-    chartElm.datum(pointsXZ).transition().delay(4500).duration(1000).call(chart.lastWeeks(20));
-    // chartElm.datum(points).transition().delay(3000).call(chart.width(1200).colour('blue'));
+    chartElm.datum(points).transition().delay(4500).duration(1000).call(chart.nextWeeks(10));
+    
+
     squareElm.datum(matrix).transition().delay(1500).call(squares.colour('blue'));
     squareElm.datum(matrix2).transition().delay(3000).duration(1000).ease(d3_rs_theme.easing()).call(squares);
     squareElm.datum(matrix3).transition().delay(4500).duration(1000).call(squares.zfield('value'));
-    // chartElm.transition().delay(4500).call(chart.width(600));
-    // chartElm.transition().delay(6000).call(chart.scale(1.5));
 
     </script>
   </body>
