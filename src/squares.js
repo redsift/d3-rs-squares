@@ -234,9 +234,6 @@ export default function chart(id) {
     });
     data.forEach((v) => { 
       p[dX(v)][dY(v)] = zfield ? dZ(v)[zfield] : dZ(v);
-      if(dX(v) !== dY(v)){
-        p[dY(v)][dX(v)] = zfield ? dZ(v)[zfield] : dZ(v);
-      }
     });
     matrix = nodes.map(y => nodes.map(x => ({
         x: x,
