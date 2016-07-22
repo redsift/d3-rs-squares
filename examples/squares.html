@@ -120,12 +120,10 @@
       .datum(matrix)
       .call(squares);
 
-    d3.select('svg').call(rstip);
-    d3.selectAll('.square')
-      .on('mouseover', rstip.show)
-      .on('mouseout', rstip.hide)
 
-    chartElm.datum(points).transition().delay(1500).duration(1000).ease(d3_rs_theme.easing()).call(chart.lastWeeks(20));
+    chartElm.datum(points).transition().delay(1500).duration(1000)
+      .ease(d3_rs_theme.easing())
+      .call(chart.lastWeeks(20));
     chartElm.datum(points).transition().delay(3000).duration(1000).call(chart.lastWeeks(10));
     chartElm.datum(points).transition().delay(4500).duration(1000).call(chart.nextWeeks(10));
     
@@ -134,6 +132,10 @@
     squareElm.datum(matrix2).transition().delay(3000).duration(1000).ease(d3_rs_theme.easing()).call(squares);
     squareElm.datum(matrix3).transition().delay(4500).duration(1000).call(squares.zfield('value'));
 
+    d3.select('svg').call(rstip);
+    d3.selectAll('.square')
+      .on('mouseover', rstip.show)
+      .on('mouseout', rstip.hide)
     </script>
   </body>
 </html>
