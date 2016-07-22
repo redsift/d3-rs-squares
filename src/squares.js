@@ -473,12 +473,10 @@ export default function chart(id) {
   }; 
 
   _impl.lastWeeks = function(_) {
-    animationDirection = -1;
     return arguments.length ? (lastWeeks = +_, _impl) : lastWeeks;
   };
 
   _impl.nextWeeks = function(_) {
-    animationDirection = 1;
     return arguments.length ? (nextWeeks = +_, _impl) : nextWeeks;
   };
 
