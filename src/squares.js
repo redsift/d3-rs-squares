@@ -2,8 +2,8 @@
  * Copyright (c) 2016Redsift Limited. All rights reserved.
 */
 import { select } from 'd3-selection';
-import * as d3TimeFormat from 'd3-time-format';
-import { sum, extent, max, min } from 'd3-array';
+import {timeFormat} from 'd3-time-format';
+import { sum, extent, max, min, range } from 'd3-array';
 import { nest} from 'd3-collection';
 import { 
   timeDay, timeDays,
@@ -62,8 +62,8 @@ export default function chart(id) {
       inset = null,
       zfield = null,
       starting = 'sunday',
-      dateFormat = d3TimeFormat.timeFormat('%Y-%m-%d'),
-      dateIdFormat = d3TimeFormat.timeFormat('%Y%U'),
+      dateFormat = timeFormat('%Y-%m-%d'),
+      dateIdFormat = timeFormat('%Y%U'),
       D = d => new Date(d),
       dayWeekNum = d => D(d).getDay(),
       dayMonthNum = d => D(d).getDate(),
@@ -194,8 +194,8 @@ export default function chart(id) {
 
     }
     dX = (d) => dateFormat(D(retroDate(d)))
-    xAxisText = d => d3TimeFormat.timeFormat('%b')(D(retroDate(d)))
-    yAxisText = d => d3TimeFormat.timeFormat('%a')(D(d))[0]
+    xAxisText = d => timeFormat('%b')(D(retroDate(d)))
+    yAxisText = d => timeFormat('%a')(D(d))[0]
 
     yAxisData = timeDays(tMD.offset(tMD(Date.now()), -1), tMD(Date.now()))
 
