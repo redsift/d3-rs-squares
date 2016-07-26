@@ -126,25 +126,25 @@ export default function chart(id) {
 
     var result = [];
     tMDs(sunNumB, sunNumE)
-        .map(weekDay =>{
-          let temp = [];
-          timeSide(weekDay).map(d => {
-              if(isFirstMonth(d)){
-                if(temp.length > 0){
-                  result.push(temp.slice(0));
-                  temp = [];
-                }else {
-                  result.push([]);
-                }
-              }
-              temp.push({ 
-                x: dateFormat(d),
-                z: dataByDate.get(dateFormat(d)) || 0
-              });
-            })
-          result.push(temp);
-        }
-      );
+      .map(weekDay =>{
+        let temp = [];
+        timeSide(weekDay).map(d => {
+          if(isFirstMonth(d)){
+            if(temp.length > 0){
+              result.push(temp.slice(0));
+              temp = [];
+            }else {
+              result.push([]);
+            }
+          }
+          temp.push({ 
+            x: dateFormat(d),
+            z: dataByDate.get(dateFormat(d)) || 0
+          });
+        })
+        result.push(temp);
+      }
+    );
     return result;
   }
 
