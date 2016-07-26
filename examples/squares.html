@@ -126,6 +126,7 @@
 
     d3.select('#elm').datum(points).call(chart24)
 
+    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty-24').type('24hcal'))
     d3.select('#elm').datum([]).call(d3_rs_squares.html('empty').type('calendar').starting('utcWednesday'));
     d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-squares'));
     

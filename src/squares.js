@@ -68,7 +68,7 @@ export default function chart(id) {
       D = d => new Date(d),
       dayWeekNum = d => D(d).getDay(),
       dayMonthNum = d => D(d).getDate(),
-      dayHourFormat = timeFormat('%w-%H'),
+      dayHourFormat = timeFormat('%w-%-H'),
       isFirstMonth = d => dayMonthNum(d) === 1,
       translate = (x,y) => `translate(${x},${y})`,
       colorScale = () => EMPTY_COLOR,
@@ -150,23 +150,14 @@ export default function chart(id) {
 
   function hourCalendar(data, inset){
     const tMD = timeMap[starting][0];
-    data = [
-      {d: 1469440190000, v:1},
-      {d: 1469353790000, v:2},
-      {d: 1469105390000, v:3},
-      {d: 1469144990000, v:4}
-    ]
 
     let dataByDayHour = nest()
       .key(d => dayHourFormat(D(d.d)))
-      .rollup(d => ({
-        date: d.d,
-        sum: sum(d, g => g.v)
-      }))
+      .rollup(d => sum(d, g => g.v))
       .map(data);
-
+    console.log(dataByDayHour)
     colorScale = scaleQuantize()
-        .domain(extent(dataByDayHour.entries(), d=>d.d))
+        .domain(extent(dataByDayHour.entries()))
         .range(palette(colour));
 
     columnId = (d,i) => i;
@@ -176,7 +167,7 @@ export default function chart(id) {
 
     // Just get a Date object at 00:00 hours, the date doesn't matter and it's only for the axis values
     // Date.now is in local time so no need for UTC conversion.
-    var aSunday = timeSunday(Date.now());
+    var aSunday = tMD(Date.now());
     xAxisData = timeHours(timeDay.offset(aSunday,-1), timeDay(aSunday))
     xAxisText = d => timeFormat('%H')(D(d))
 
@@ -185,14 +176,14 @@ export default function chart(id) {
     yAxisData = timeDays(tMD.offset(tMD(Date.now()), -1), tMD(Date.now()))
     yAxisText = d => timeFormat('%a')(D(d))[0]
 
-    var dhMatrix = range(24).map(h=>
+    var dhMatrix = range(24).map(h =>
         range(7).map(wd =>{
           // here we can apply the local format the user might have chosen
           const weekDay = timeFormat('%a')(yAxisData[wd]);
           const hourDay = timeFormat('%H')(xAxisData[h]);
           return {
             x: [weekDay, '@', hourDay].join(' '),
-            z: dataByDayHour.get(wd+"-"+h) ? dataByDayHour.get(wd+"-"+h).sum : 0
+            z: dataByDayHour.get([wd,'-',h].join('')) || 0
           }
         })
       )
