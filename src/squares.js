@@ -67,6 +67,7 @@ export default function chart(id) {
       D = d => new Date(d),
       dayWeekNum = d => D(d).getDay(),
       dayMonthNum = d => D(d).getDate(),
+      dayHourFormat = timeFormat('%w-%H'),
       isFirstMonth = d => dayMonthNum(d) === 1,
       translate = (x,y) => `translate(${x},${y})`,
       colorScale = () => EMPTY_COLOR,
@@ -144,6 +145,45 @@ export default function chart(id) {
         }
       );
     return result;
+  }
+
+  function hourCalendar(data, inset){
+    data = [
+      {d: 1469440190000, v:1},
+      {d: 1469353790000, v:2},
+      {d: 1469105390000, v:3},
+      {d: 1469144990000, v:4}
+    ]
+
+    let dataByDayHour = nest()
+      .key(d => dayHourFormat(D(d.d)))
+      .rollup(d => sum(d, g => g.v))
+      .map(data);
+    console.log(dataByDayHour)
+    var a = range(24).map(h=>
+        range(7).map(wd =>({
+          x: wd+"-"+h,
+          z: dataByDayHour.get(wd+"-"+h) || 0
+        }))
+      )
+    colorScale = scaleQuantize()
+        .domain(extent(dataByDayHour.entries(), d=>d.d))
+        .range(palette(colour));
+    columnId = (d,i) => i;
+
+
+    // dX = (d) => dateFormat(D(retroDate(d)))
+    // xAxisText = d => timeFormat('%b')(D(retroDate(d)))
+    // yAxisText = d => timeFormat('%a')(D(d))[0]
+
+    // yAxisData = timeDays(tMD.offset(tMD(Date.now()), -1), tMD(Date.now()))
+
+    // xAxisData = monthNames;
+
+    const extra = DEFAULT_AXIS_PADDING + margin + inset.left + inset.right;
+    cellSize = (width - extra) / data.length;
+    heightCalc(null, inset);
+    return a;
   }
 
   function heightCalc(override, inset){
@@ -286,7 +326,11 @@ export default function chart(id) {
 
     selection.each(function(data) {
       height = height || Math.round(width * DEFAULT_ASPECT);
-      data = type === 'calendar' ? dateValueCalc(data, _inset) : xyzCalc(data, _inset);
+      const types ={
+        'calendar': dateValueCalc,
+        '24hcal': hourCalendar
+      }
+      data = types[type] ? types[type](data, _inset) : xyzCalc(data, _inset);
       let node = select(this);
       // SVG element
       let sid = null;
