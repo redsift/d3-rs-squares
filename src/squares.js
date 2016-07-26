@@ -241,7 +241,7 @@ export default function chart(id) {
       return e * cellSize
 
     }
-    dX = (d) => dateFormat(D(retroDate(d)))
+    dX = d => dateFormat(D(retroDate(d)))
     xAxisText = d => timeFormat('%b')(D(retroDate(d)))
     yAxisText = d => timeFormat('%a')(D(d))[0]
 
@@ -614,6 +614,10 @@ export default function chart(id) {
 
   _impl.zfield = function(_) {
     return arguments.length ? (zfield = _, _impl) : zfield;
+  };
+
+  _impl.cellSize = function(_) {
+    return arguments.length ? (cellSize = _, _impl) : cellSize;
   };
 
   return _impl;
