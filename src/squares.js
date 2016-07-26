@@ -604,7 +604,9 @@ export default function chart(id) {
   };
 
   _impl.starting = function(_) {
-    return arguments.length && timeMap.hasOwnProperty(_) ? (starting = _, _impl) : starting;
+    return arguments.length ? 
+      timeMap.hasOwnProperty(_) ? (starting = _, _impl) : _impl
+      : starting;
   };
 
   _impl.inset = function(_) {
