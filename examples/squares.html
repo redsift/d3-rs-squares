@@ -109,7 +109,20 @@
     var rstip = d3_rs_tip.body()
         .attr('class', 'd3-tip')
         .direction('n')
-        .html(d => (d.y ? d.x+','+d.y : d3.timeFormat('%d %b %Y')(new Date(d.x))) + ': ' + d.z);
+        .html(d => {
+          let r = '';
+          if(d.y){
+           r = d.x+','+d.y
+          }else{
+            if(d.x.indexOf('@') > -1){
+              r = d.x;
+            }else{
+              r = d3.timeFormat('%d %b %Y')(new Date(d.x))
+            }
+            r += ': ' + d.z
+          }
+          return r;
+        });
 
     d3.select('#elm').datum(points).call(chart24)
 
