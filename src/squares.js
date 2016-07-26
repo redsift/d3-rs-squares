@@ -91,7 +91,7 @@ export default function chart(id) {
       height = null,
       lastWeeks = 0,
       nextWeeks = 0,
-      type = null,
+      type = 'cooc',
       scale = 1.0,
       calendarColumn = 8,
       cellSize = (width - margin) / (lastWeeks+nextWeeks+2 +(lastWeeks+nextWeeks/4)),
@@ -436,12 +436,13 @@ export default function chart(id) {
 
       xAxis.attr('transform', (d,i) => xLabelTranslate( _inset.left + (d.order || i) * cellSize, _inset.top))
         .text(xAxisText)
-        .attr('line-height', cellSize);
-      if(type === 'calendar'){
-        xAxis.attr('x', cellSize/2)
-      }else{
+        .attr('line-height', cellSize)
+
+      if(type === 'cooc'){
         xAxis.attr('y', cellSize/2)
         xAxis.attr('x', 0)
+      }else {
+        xAxis.attr('x', cellSize/2)
       }
 
       if(type === 'calendar'){
