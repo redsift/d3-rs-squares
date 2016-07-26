@@ -288,7 +288,8 @@ export default function chart(id) {
     data.forEach((v) => { 
       p[dY(v)][dX(v)] = zfield ? dZ(v)[zfield] : dZ(v);
     });
-    matrix = nodes.map(y => nodes.map(x => ({
+    matrix = nodes.map(y => 
+      nodes.map(x => ({
         x: x,
         y: y,
         z: p[x][y]
@@ -318,8 +319,8 @@ export default function chart(id) {
     var nodesX = Array.from(setX);
     var nodesY = Array.from(setY);
     var p ={};
-    nodesY.map(v => { p[v]={} });
     nodesY.map(y => {
+      p[y] = p[y] || {};
       nodesX.map(x => {
         p[y][x] = 0;
         })
