@@ -5,7 +5,8 @@ import { select } from 'd3-selection';
 import {timeFormat} from 'd3-time-format';
 import { sum, extent, max, min, range } from 'd3-array';
 import { nest} from 'd3-collection';
-import { 
+import {
+  timeHours,
   timeDay, timeDays,
   timeWeek,
   timeSunday, timeSundays,
@@ -148,6 +149,7 @@ export default function chart(id) {
   }
 
   function hourCalendar(data, inset){
+    const tMD = timeMap[starting][0];
     data = [
       {d: 1469440190000, v:1},
       {d: 1469353790000, v:2},
@@ -157,33 +159,43 @@ export default function chart(id) {
 
     let dataByDayHour = nest()
       .key(d => dayHourFormat(D(d.d)))
-      .rollup(d => sum(d, g => g.v))
+      .rollup(d => ({
+        date: d.d,
+        sum: sum(d, g => g.v)
+      }))
       .map(data);
     console.log(dataByDayHour)
-    var a = range(24).map(h=>
+    var dhMatrix = range(24).map(h=>
         range(7).map(wd =>({
           x: wd+"-"+h,
-          z: dataByDayHour.get(wd+"-"+h) || 0
+          z: dataByDayHour.get(wd+"-"+h) ? dataByDayHour.get(wd+"-"+h).sum : 0
         }))
       )
     colorScale = scaleQuantize()
         .domain(extent(dataByDayHour.entries(), d=>d.d))
         .range(palette(colour));
+
     columnId = (d,i) => i;
 
 
-    // dX = (d) => dateFormat(D(retroDate(d)))
-    // xAxisText = d => timeFormat('%b')(D(retroDate(d)))
-    // yAxisText = d => timeFormat('%a')(D(d))[0]
+    dX = d => dateFormat(D(d.x))
 
-    // yAxisData = timeDays(tMD.offset(tMD(Date.now()), -1), tMD(Date.now()))
+    // Just get a Date object at 00:00 hours, the date doesn't matter and it's only for the axis values
+    // Date.now is in local time so no need for UTC conversion.
+    var aSunday = timeSunday(Date.now());
+    xAxisData = timeHours(timeDay.offset(aSunday,-1), timeDay(aSunday))
+    xAxisText = d => timeFormat('%H')(D(d))
 
-    // xAxisData = monthNames;
+    // Just get a Date object to calculate a week starting at the specified day of the week
+    // No UTC needed only for axis display
+    yAxisData = timeDays(tMD.offset(tMD(Date.now()), -1), tMD(Date.now()))
+    yAxisText = d => timeFormat('%a')(D(d))[0]
 
     const extra = DEFAULT_AXIS_PADDING + margin + inset.left + inset.right;
-    cellSize = (width - extra) / data.length;
+    cellSize = (width - extra) / dhMatrix.length;
     heightCalc(null, inset);
-    return a;
+
+    return dhMatrix;
   }
 
   function heightCalc(override, inset){
