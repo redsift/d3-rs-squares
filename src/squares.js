@@ -156,7 +156,7 @@ export default function chart(id) {
       .rollup(d => sum(d, g => g.v))
       .map(data);
     colorScale = scaleQuantize()
-        .domain(extent(dataByDayHour.entries()))
+        .domain(extent(dataByDayHour.entries(), d => d.value))
         .range(palette(colour));
 
     columnId = (d,i) => i;
@@ -219,7 +219,7 @@ export default function chart(id) {
       .map(data);
 
     colorScale = scaleQuantize()
-        .domain(extent(dataByDate.entries(), retroValue))
+        .domain(extent(dataByDate.entries(), d => d.value))
         .range(palette(colour));
 
     columnId = (d,i) => {
