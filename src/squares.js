@@ -155,7 +155,6 @@ export default function chart(id) {
       .key(d => dayHourFormat(D(d.d)))
       .rollup(d => sum(d, g => g.v))
       .map(data);
-    console.log(dataByDayHour)
     colorScale = scaleQuantize()
         .domain(extent(dataByDayHour.entries()))
         .range(palette(colour));
