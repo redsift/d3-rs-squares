@@ -98,13 +98,13 @@
     ];
 
     
-    var squares = d3_rs_squares.html('squares').theme('dark')
+    var squares = d3_rs_squares.html('squares').type('matrix.cooc').theme('dark')
       .inset({left: 80, top: 80, bottom: 0, right: 0})
       .height(400);
 
-    var chart = d3_rs_squares.html('calendar').type('calendar');
+    var chart = d3_rs_squares.html('calendar').type('calendar.days');
 
-    var chart24 = d3_rs_squares.html('calendar24').type('24hcal');
+    var chart24 = d3_rs_squares.html('calendar24').type('calendar.hours');
 
     var rstip = d3_rs_tip.body()
         .attr('class', 'd3-tip')
@@ -126,9 +126,9 @@
 
     d3.select('#elm').datum(points).call(chart24)
 
-    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty-24').type('24hcal'))
-    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty').type('calendar').starting('utcWednesday'));
-    d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-squares'));
+    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty-24').type('calendar.hours'))
+    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty').type('calendar.days').starting('utcWednesday'));
+    d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-squares').type('matrix.cooc'));
     
     var chartElm = d3.select('#elm')
       .datum(points)

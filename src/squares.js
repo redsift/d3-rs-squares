@@ -91,7 +91,8 @@ export default function chart(id) {
       height = null,
       lastWeeks = 0,
       nextWeeks = 0,
-      type = 'cooc',
+      type = 'matrix',
+      subType = null,
       scale = 1.0,
       calendarColumn = 8,
       cellSize = (width - margin) / (lastWeeks+nextWeeks+2 +(lastWeeks+nextWeeks/4)),
@@ -260,17 +261,16 @@ export default function chart(id) {
     return data;
   }
 
-  function xyzCalc(data, inset){
-    if(!data || data.length < 1){
-      data = [{x:'a',y:'b',z:0}];
-    }
+  function coocCalc(data){
     let matrix = [];
-    // get unique x and y
     let set = new Set();
+
+    // get unique x and y
     data.forEach((v)=>{  
       set.add(dX(v));
       set.add(dY(v));
     })
+
     var nodes = Array.from(set);
     var p ={};
     nodes.map(v => { p[v]={} });
@@ -290,17 +290,65 @@ export default function chart(id) {
       }))
     );
 
+    yAxisData = nodes;
+    xAxisData = nodes;
+
+    return matrix;
+  }
+
+  function matrixCalc(data){
+    let matrix = [];
+    let setX = new Set();
+    let setY = new Set();
+
+    // get unique x and y
+    data.forEach((v)=>{  
+      setX.add(dX(v));
+      setY.add(dY(v));
+    })
+
+    var nodesX = Array.from(setX);
+    var nodesY = Array.from(setY);
+    var p ={};
+    nodesY.map(v => { p[v]={} });
+    nodesY.map(y => {
+      nodesX.map(x => {
+        p[y][x] = 0;
+        })
+    });
+    data.forEach((v) => { 
+      p[dY(v)][dX(v)] = zfield ? dZ(v)[zfield] : dZ(v);
+    });
+    matrix = nodesY.map(y => 
+      nodesX.map(x => ({
+        x: x,
+        y: y,
+        z: p[x][y]
+      }))
+    );
+
+    yAxisData = nodesY;
+    xAxisData = nodesX;
+
+    return matrix;
+  }
+
+  function xyzCalc(data, inset){
+    if(!data || data.length < 1){
+      data = [{x:'a',y:'b',z:0}];
+    }
+    let matrix = subType === 'cooc' ? coocCalc(data) : matrixCalc(data);
+
     colorScale = scaleQuantize()
         .domain([
           min(matrix, d => min(d, dZ)),
           max(matrix, d => max(d, dZ))
           ])
         .range(palette(colour))
-    yAxisData = nodes;
-    xAxisData = nodes;
+
     const _w = width - (DEFAULT_AXIS_PADDING + margin + inset.left + inset.right);
     const _h = height - (DEFAULT_AXIS_PADDING + margin + inset.top + inset.bottom);
-    cellSize = Math.min(_w,_h) / (nodes.length+1);
+    cellSize = Math.min(_w,_h) / (matrix.length+1);
     columnId = (d,i) => d && d.length > 1 ? dY(d[0]) : i;
     xLabelAnchor = 'start';
     xLabelBaseline = 'middle';
@@ -334,11 +382,12 @@ export default function chart(id) {
 
     selection.each(function(data) {
       height = height || Math.round(width * DEFAULT_ASPECT);
+      const tst = [type, subType].join('.');
       const types ={
-        'calendar': dateValueCalc,
-        '24hcal': hourCalendar
+        'calendar.days': dateValueCalc,
+        'calendar.hours': hourCalendar
       }
-      data = types[type] ? types[type](data, _inset) : xyzCalc(data, _inset);
+      data = types[tst] ? types[tst](data, _inset) : xyzCalc(data, _inset);
       let node = select(this);
       // SVG element
       let sid = null;
@@ -428,14 +477,14 @@ export default function chart(id) {
         .text(xAxisText)
         .attr('line-height', cellSize)
 
-      if(type === 'cooc'){
+      if(type === 'matrix'){
         xAxis.attr('y', cellSize/2)
         xAxis.attr('x', 0)
       }else {
         xAxis.attr('x', cellSize/2)
       }
 
-      if(type === 'calendar'){
+      if(type === 'calendar' && subType === 'days'){
         eXAxis.attr('x', animationDirection*width)
       }else{
         eXAxis.attr('x', height)
@@ -537,8 +586,15 @@ export default function chart(id) {
     return arguments.length ? (colour = _, _impl) : colour;
   };
 
-  _impl.type = function(_) { 
-    return arguments.length ? (type = _, _impl) : type 
+  _impl.type = function(_) {
+    if(!arguments.length){
+      return subType ? [type, subType].join('.') : type ;
+    }
+    const s = _.split('.')
+    type = s[0];
+    subType = s.length > 1 ? s[1] : null;
+
+    return _impl
   };
 
   _impl.style = function(_) {
