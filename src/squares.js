@@ -122,8 +122,7 @@ export default function chart(id) {
       Math.min(tMD.offset(today, nw), timeWeek.offset(s, 1)));
     var timeSide = (lw > 0 && nw > 0) ? timeDaysBoth :
                     (lw > 0) ? timeDaysPast :
-                      (nw > 0) ? timeDaysFuture :
-                        timeDays(today,today);
+                      (nw > 0) ? timeDaysFuture : [];
 
     var result = [];
     tMDs(sunNumB, sunNumE)
@@ -235,7 +234,7 @@ export default function chart(id) {
       const v = d.x || d;
       let e = 0;
       if(dayWeekNum(v) < checkStarting) {
-        e = 6 - dayWeekNum(v)
+        e = dayWeekNum(v) + 6 - checkStarting
       }else{
         e = dayWeekNum(v) - checkStarting
       }
