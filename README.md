@@ -58,14 +58,14 @@ For the co-occurrence matrix the expected JSON object should be:
 
 ### Parameters
 
-|Name|Description|Transition|
-|----|-----------|----------|
-|`classed`|SVG custom class|N|
-|`width`, `height`, `size`, `scale`|*Integer* SVG container sizes|Y
-|`style`|*String* Custom CSS to inject into chart| N
-|`colour`| Colour palette for the data. Available options from [d3-rs-theme](https://github.com/Redsift/d3-rs-theme#presentation-color-palette) | Y|
-|`zfield`| (matrix-only) if the value in the `z` field is an object a first level property can be accessed from that object|
-|`type`| `'calendar'` to switch to calendar display|
-|`lastWeeks`| (calendar-only) Number of weeks in the past from now| Y|
-|`nextWeeks`| (calendar-only) Number of weeks in the future from now | Y |
-|`starting`| (calendar-only) Day that weeks should start. Available options: (`'monday'`, `'tuesday'`, ...) or the utc counterparts: (`'utcMonday'`, `'utcTuesday'`, ...)
+|Name|Used In|Description|Transition|
+|----|--------|----------|----------|
+|`classed`|*|SVG custom class|N|
+|`width`, `height`, `size`, `scale`|*|*Integer* SVG container sizes|Y
+|`style`|*|*String* Custom CSS to inject into chart| N
+|`colour`|*| Colour palette for the data. Available options from [d3-rs-theme](https://github.com/Redsift/d3-rs-theme#presentation-color-palette) | Y|
+|`zfield`| matrix.* | if the value in the `z` field is an object a first level property can be accessed from that object|
+|`type`| |`'calendar.days'`, `'calendar.hours'`, `'matrix.cooc'`, `'matrix'`(default)|
+|`lastWeeks`| calendar.*| Number of weeks in the past from now| Y|
+|`nextWeeks`| calendar.*| Number of weeks in the future from now | Y |
+|`starting`| calendar.*| Day that weeks should start. Available options: (`'monday'`, `'tuesday'`, ...) or the utc counterparts: (`'utcMonday'`, `'utcTuesday'`, ...)
