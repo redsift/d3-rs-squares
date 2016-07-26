@@ -106,6 +106,9 @@
 
     var chart24 = d3_rs_squares.html('calendar24').type('calendar.hours');
 
+    var simpleM = d3_rs_squares.html('simpleM')
+      .inset({left: 80, top: 80, bottom: 0, right: 0})
+
     var rstip = d3_rs_tip.body()
         .attr('class', 'd3-tip')
         .direction('n')
@@ -126,9 +129,6 @@
 
     d3.select('#elm').datum(points).call(chart24)
 
-    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty-24').type('calendar.hours'))
-    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty').type('calendar.days').starting('utcWednesday'));
-    d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-squares').type('matrix.cooc'));
     
     var chartElm = d3.select('#elm')
       .datum(points)
@@ -137,6 +137,10 @@
     var squareElm = d3.select('#elm')
       .datum(matrix)
       .call(squares);
+
+    var matrixElm = d3.select('#elm')
+      .datum(matrix)
+      .call(simpleM);
 
 
     chartElm.datum(points).transition().delay(1500).duration(1000)
@@ -150,6 +154,13 @@
     squareElm.datum(matrix2).transition().delay(3000).duration(1000).ease(d3_rs_theme.easing()).call(squares);
     squareElm.datum(matrix3).transition().delay(4500).duration(1000).call(squares.zfield('value'));
 
+
+
+    // empty examples
+    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty-24').type('calendar.hours'));
+    d3.select('#elm').datum(null).call(d3_rs_squares.html('empty').type('calendar.days').starting('utcWednesday'));
+    d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-cooc').type('matrix.cooc'));
+    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty-matrix'));
 
 
     d3.select('svg').call(rstip);

@@ -262,6 +262,9 @@ export default function chart(id) {
   }
 
   function coocCalc(data){
+    if(!data || data.length < 1){
+      data = [{x:'a',y:'b',z:0}];
+    }
     let matrix = [];
     let set = new Set();
 
@@ -281,7 +284,7 @@ export default function chart(id) {
         })
     });
     data.forEach((v) => { 
-      p[dX(v)][dY(v)] = zfield ? dZ(v)[zfield] : dZ(v);
+      p[dY(v)][dX(v)] = zfield ? dZ(v)[zfield] : dZ(v);
     });
     matrix = nodes.map(y => nodes.map(x => ({
         x: x,
@@ -297,6 +300,9 @@ export default function chart(id) {
   }
 
   function matrixCalc(data){
+    if(!data || data.length < 1){
+      data = [{x:'a',y:'b',z:0}];
+    }
     let matrix = [];
     let setX = new Set();
     let setY = new Set();
@@ -323,20 +329,16 @@ export default function chart(id) {
       nodesX.map(x => ({
         x: x,
         y: y,
-        z: p[x][y]
+        z: p[y][x]
       }))
     );
-
-    yAxisData = nodesY;
-    xAxisData = nodesX;
+    yAxisData = nodesX;
+    xAxisData = nodesY;
 
     return matrix;
   }
 
   function xyzCalc(data, inset){
-    if(!data || data.length < 1){
-      data = [{x:'a',y:'b',z:0}];
-    }
     let matrix = subType === 'cooc' ? coocCalc(data) : matrixCalc(data);
 
     colorScale = scaleQuantize()
@@ -348,7 +350,7 @@ export default function chart(id) {
 
     const _w = width - (DEFAULT_AXIS_PADDING + margin + inset.left + inset.right);
     const _h = height - (DEFAULT_AXIS_PADDING + margin + inset.top + inset.bottom);
-    cellSize = Math.min(_w,_h) / (matrix.length+1);
+    cellSize = Math.min(_w,_h) / (subType === 'cooc' ? matrix.length : Math.max(matrix.length, matrix[0].length)+1);
     columnId = (d,i) => d && d.length > 1 ? dY(d[0]) : i;
     xLabelAnchor = 'start';
     xLabelBaseline = 'middle';
