@@ -405,10 +405,11 @@ export default function chart(id) {
         elmS = rootG.append('g').attr('class', classed).attr('id', id);
       }
 
-      let column = elmS.selectAll('g').data(data, columnId);
+      let column = elmS.selectAll('g.column').data(data, columnId);
       let eColumn = column.exit();
       column = column.enter()
           .append('g')
+          .attr('class','column')
           .attr('id', columnId)
           .attr('transform', (_,i) => translate( animationDirection*(_inset.left + (++i * cellSize)+width), _inset.top + DEFAULT_AXIS_PADDING))
         .merge(column);
