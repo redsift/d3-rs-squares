@@ -232,29 +232,23 @@ export default function chart(id) {
     // used for squares and yAxis
     squareY = d => {
       const v = d.x || d;
-      let e = 0;
-      if(dayWeekNum(v) < checkStarting) {
-        e = dayWeekNum(v) + 6 - checkStarting
-      }else{
-        e = dayWeekNum(v) - checkStarting
-      }
+      let e = dayWeekNum(v) - checkStarting + (dayWeekNum(v) < checkStarting ? 7 : 0);
       return e * cellSize
-
     }
-    dX = d => dateFormat(D(retroDate(d)))
-    xAxisText = d => timeFormat('%b')(D(retroDate(d)))
-    yAxisText = d => timeFormat('%a')(D(d))[0]
-
-    yAxisData = timeDays(tMD.offset(tMD(Date.now()), -1), tMD(Date.now()))
 
     data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
     // edge case when the first of the month is the first element of the chart
     data = data[0].length < 1 ? data.slice(1) : data
-
     var monthNames = data
         .map((d,i) => ({order: i, d: retroDate(d[0])}))
         .filter(d => d && dayMonthNum(d.d) <= 7 && dayWeekNum(retroDate(d)) === checkStarting );
     xAxisData = monthNames;
+    xAxisText = d => timeFormat('%b')(D(retroDate(d)))
+    dX = d => dateFormat(D(retroDate(d)))
+
+    yAxisData = timeDays(tMD.offset(tMD(Date.now()), -1), tMD(Date.now()))
+
+    yAxisText = d => timeFormat('%a')(D(d))[0]
 
     const extra = DEFAULT_AXIS_PADDING + margin + inset.left + inset.right;
     cellSize = (width - extra) / data.length;
