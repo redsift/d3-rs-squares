@@ -45,8 +45,17 @@
       .tickCountIndex('timeYear')
       .tickAxisFormatIndex('%b')
 
+    var quarterDayMonths = d3_rs_squares.html('quarterDay-months')
+      .intervalIndex('timeMonth')
+      .tickCountIndex('timeYear')
+      .tickAxisFormatIndex('%b')
+      .intervalValue('timeQuarterDay')
+      .tickCountValue('timeDay')
+      .tickAxisFormatValue('%H')
+
     d3.select('#elm').datum(ddMatrix).call(daysHours);
     d3.select('#elm').datum(vMMatrix).call(valuesMonths);
+    d3.select('#elm').datum(ddMatrix).call(quarterDayMonths);
 
     </script>
   </body>

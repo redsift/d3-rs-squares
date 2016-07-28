@@ -80,7 +80,9 @@ const timeMap = {
   utcFriday: [utcFriday, utcFridays],
   utcSaturday: [utcSaturday, utcSaturdays],
   utcMonth: [utcMonth, utcMonths],
-  utcYear: [utcYear, utcYears]
+  utcYear: [utcYear, utcYears],
+  timeQuarterDay: [timeHour, timeHour.every(6).range],
+  utcQuarterDay: [timeHour, utcHour.every(6).range]
 }
 
 export default function chart(id) {
@@ -358,10 +360,22 @@ export default function chart(id) {
       dX = d => _xIDs(d.x);
 
       if(_yInt && _yFmt){
-        let _yIDs = d => _yFmt(timeMap[_yInt][0](d));
         let tU = timeMap[tickCountValue][0]
         let tUs= timeMap[_yInt][1]
         let _yRange = tUs(tU(Date.now()), tU.offset(tU(Date.now()), 1));
+        let _yIDs = d => {
+          const f = timeMap[_yInt][0]
+          const a = _yFmt(f(d))
+          const _yR = _yRange.map(d => _yFmt(f(d)))
+          if(_yInt.indexOf('QuarterDay') > -1){
+            return a < _yR[1] ? _yR[0]
+              : a < _yR[2] ? _yR[1]
+              : a < _yR[3] ? _yR[2]
+              : _yR[3];
+          }
+
+          return a;
+        };
         _yRange.map(k =>{
           setY.add(_yIDs(k))
         })
