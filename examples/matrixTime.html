@@ -1,0 +1,53 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="https://static.redsift.io/ui/latest/css/full/redsift-xtra.min.css">
+
+  </head>
+  <body>
+    <h1>SVG Matrices with Time Demo</h2>
+    <div id="elm">
+
+    </div>
+    <div id="elm2">
+
+    </div>
+        
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="//static.redsift.io/reusable/d3-rs-theme/latest/d3-rs-theme.umd-es2015.min.js"></script>
+    <script src="//static.redsift.io/reusable/d3-rs-tip/latest/d3-rs-tip.umd-es2015.min.js"></script>
+    <script src="/d3-rs-squares.umd-es2015.min.js"></script>
+    <script>
+
+    'use strict';
+  
+
+    var ddMatrix = [
+      {x: 993999486000, y:993999486000 , z:1},
+      {x: 996677886000, y:996677886000, z:1}
+    ]
+    var vMMatrix = [
+      {x: 993999486000, y:'a' , z:1},
+      {x: 996677886000, y:'b', z:1},
+      {x: 996677886000, y:'c', z:1},
+      {x: 996677886000, y:'d', z:1}
+    ]
+
+    var daysHours = d3_rs_squares.html('days-hours')
+      .intervalIndex('timeHour')
+      .intervalValue('timeDay')
+      .tickCountIndex('timeDay')
+      .tickCountValue('timeWeek')
+      .tickAxisFormatIndex('%H')
+      .tickAxisFormatValue('%a')
+
+    var valuesMonths = d3_rs_squares.html('values-months')
+      .intervalIndex('timeMonth')
+      .tickCountIndex('timeYear')
+      .tickAxisFormatIndex('%b')
+
+    d3.select('#elm').datum(ddMatrix).call(daysHours);
+    d3.select('#elm').datum(vMMatrix).call(valuesMonths);
+
+    </script>
+  </body>
+</html>

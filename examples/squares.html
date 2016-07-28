@@ -2,52 +2,6 @@
 <head>
   <link rel="stylesheet" type="text/css" href="https://static.redsift.io/ui/latest/css/full/redsift-xtra.min.css">
 
-  <style>
-    .month {
-      font-size: 0.7em;
-    }
-    .wday {
-      font-size: 0.7em;
-    }
-
-    .key {
-      margin-bottom: 32px;
-      margin-right: 32px;
-      display: flex;
-      flex-flow: row;
-      align-items: baseline;
-      justify-content: flex-end;
-
-    }
-    .key span {
-      float: left;
-    }
-    .key .legend {
-        display: inline-block;
-        list-style: none;
-        margin: 0 5px;
-        position: relative;
-        bottom: -1px;
-        float: left;
-    }
-    ul.legend {
-      padding-left: 0px;
-    }
-    .key .legend li {
-        float:left;
-        display: inline-block;
-        margin-right: 4px;
-        width: 10px;
-        height: 10px;
-    }
-
-
-    div > span {
-        display: block;
-        text-align: center;
-    }
-
-  </style>
   </head>
   <body>
     <h1>SVG Squares Demo</h2>
@@ -97,7 +51,6 @@
       {x: 'c', y: 'd', z: 0.5}
     ];
 
-    
     var squares = d3_rs_squares.html('squares').type('matrix.cooc').theme('dark')
       .inset({left: 80, top: 80, bottom: 0, right: 0})
       .height(400);

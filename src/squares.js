@@ -92,6 +92,12 @@ export default function chart(id) {
       inset = null,
       zfield = null,
       starting = 'timeSunday',
+      intervalIndex = null,
+      intervalValue = null,
+      tickCountIndex = null,
+      tickCountValue = null,
+      tickAxisFormatIndex = null,
+      tickAxisFormatValue = null,
       dateFormat = timeFormat('%Y-%m-%d'),
       dateIdFormat = timeFormat('%Y%U'),
       D = d => new Date(d),
@@ -333,34 +339,63 @@ export default function chart(id) {
     let setX = new Set();
     let setY = new Set();
 
+    let _xInt = intervalIndex
+    let _yInt = intervalValue
+    let _xFmt = timeFormat(tickAxisFormatIndex)
+    let _yFmt = timeFormat(tickAxisFormatValue)
+
+    if(_xInt){
+
+      let _xIDs = d => _xFmt(timeMap[_xInt][0](d));
+      let _min = min(data, dX);
+      let _max = max(data, dX);
+      let tU = timeMap[tickCountIndex][0]
+      let tUs = timeMap[_xInt][1]
+      let _xRange = tUs(tU(Date.now()), tU.offset(tU(Date.now()), 1));
+      _xRange.map(k =>{ 
+        setX.add(_xIDs(k)) 
+      })
+      dX = d => _xIDs(d.x);
+
+      if(_yInt && _yFmt){
+        let _yIDs = d => _yFmt(timeMap[_yInt][0](d));
+        let tU = timeMap[tickCountValue][0]
+        let tUs= timeMap[_yInt][1]
+        let _yRange = tUs(tU(Date.now()), tU.offset(tU(Date.now()), 1));
+        _yRange.map(k =>{
+          setY.add(_yIDs(k))
+        })
+        dY = d => _yIDs(d.y);
+      }
+    }
+
     // get unique x and y
-    data.forEach((v)=>{  
+    data.forEach(v => {
       setX.add(dX(v));
       setY.add(dY(v));
     })
 
-    var nodesX = Array.from(setX);
-    var nodesY = Array.from(setY);
-    var p ={};
-    nodesY.map(y => {
-      p[y] = p[y] || {};
-      nodesX.map(x => {
-        p[y][x] = 0;
+    let nodesX = Array.from(setX);
+    const nodesY = Array.from(setY);
+    let p ={};
+    nodesX.map(x => {
+      p[x] = p[x] || {};
+      nodesY.map(y => {
+        p[x][y] = 0;
         })
     });
     data.forEach((v) => { 
-      p[dY(v)][dX(v)] = zfield ? dZ(v)[zfield] : dZ(v);
+      p[dX(v)][dY(v)] = zfield ? dZ(v)[zfield] : dZ(v);
     });
-    matrix = nodesY.map(y => 
-      nodesX.map(x => ({
+    matrix = nodesX.map(x => 
+      nodesY.map(y => ({
         x: x,
         y: y,
-        z: p[y][x]
+        z: p[x][y]
       }))
     );
-    yAxisData = nodesX;
-    xAxisData = nodesY;
-
+    yAxisData = nodesY;
+    xAxisData = nodesX;
     return matrix;
   }
 
@@ -376,7 +411,10 @@ export default function chart(id) {
 
     const _w = width - (DEFAULT_AXIS_PADDING + margin + inset.left + inset.right);
     const _h = height - (DEFAULT_AXIS_PADDING + margin + inset.top + inset.bottom);
-    cellSize = Math.min(_w,_h) / (subType === 'cooc' ? matrix.length : Math.max(matrix.length, matrix[0].length)+1);
+    cellSize = Math.min(
+      _w / matrix.length,
+      _h / (subType === 'cooc' ? matrix.length : matrix[0].length)
+    );
     columnId = (d,i) => d && d.length > 1 ? dY(d[0]) : i;
     xLabelAnchor = 'start';
     xLabelBaseline = 'middle';
@@ -646,6 +684,30 @@ export default function chart(id) {
 
   _impl.cellSize = function(_) {
     return arguments.length ? (cellSize = _, _impl) : cellSize;
+  };
+
+  _impl.intervalIndex = function(_) {
+    return arguments.length ? (intervalIndex = _, _impl) : intervalIndex;
+  };
+  
+  _impl.intervalValue = function(_) {
+    return arguments.length ? (intervalValue = _, _impl) : intervalValue;
+  };
+  
+  _impl.tickCountIndex = function(_) {
+    return arguments.length ? (tickCountIndex = _, _impl) : tickCountIndex;
+  };
+  
+  _impl.tickCountValue = function(_) {
+    return arguments.length ? (tickCountValue = _, _impl) : tickCountValue;
+  };
+  
+  _impl.tickAxisFormatIndex = function(_) {
+    return arguments.length ? (tickAxisFormatIndex = _, _impl) : tickAxisFormatIndex;
+  };
+  
+  _impl.tickAxisFormatValue = function(_) {
+    return arguments.length ? (tickAxisFormatValue = _, _impl) : tickAxisFormatValue;
   };
 
   return _impl;
