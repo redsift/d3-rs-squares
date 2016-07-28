@@ -2,13 +2,17 @@
  * Copyright (c) 2016Redsift Limited. All rights reserved.
 */
 import { select } from 'd3-selection';
-import {timeFormat} from 'd3-time-format';
+import { timeFormat, timeFormatLocale, timeFormatDefaultLocale } from 'd3-time-format';
 import { sum, extent, max, min, range } from 'd3-array';
 import { nest} from 'd3-collection';
 import {
-  timeHours,
+  timeSecond, timeSeconds,
+  timeMinute, timeMinutes,
+  timeHour, timeHours,
   timeDay, timeDays,
-  timeWeek,
+  timeWeek, timeWeeks,
+  timeMonth, timeMonths,
+  timeYear, timeYears,
   timeSunday, timeSundays,
   utcSunday, utcSundays,
   timeMonday, timeMondays,
@@ -22,10 +26,19 @@ import {
   timeFriday, timeFridays,
   utcFriday, utcFridays,
   timeSaturday, timeSaturdays,
-  utcSaturday, utcSaturdays
+  utcSaturday, utcSaturdays,
+  utcSecond, utcSeconds,
+  utcMinute, utcMinutes,
+  utcHour, utcHours,
+  utcDay, utcDays,
+  utcWeek, utcWeeks,
+  utcMonth, utcMonths,
+  utcYear, utcYears,
 } from 'd3-time';
-import { scaleQuantize } from 'd3-scale';
+import { scaleQuantize, scaleTime } from 'd3-scale';
+import { axisBottom, axisLeft, axisRight, axisTop } from 'd3-axis';
 import { html as svg } from '@redsift/d3-rs-svg';
+import { units, time } from '@redsift/d3-rs-intl';
 import { 
   presentation10,
   display,
@@ -38,13 +51,27 @@ const DEFAULT_INSET = 24;
 const DEFAULT_AXIS_PADDING = 8;
 const EMPTY_COLOR = '#f2f2f2';
 const timeMap = {
-  sunday: [timeSunday, timeSundays],
-  monday: [timeMonday, timeMondays],
-  tuesday: [timeTuesday, timeTuesdays],
-  wednesday: [timeWednesday, timeWednesdays],
-  thursday: [timeThursday, timeThursdays],
-  friday: [timeFriday, timeFridays],
-  saturday: [timeSaturday, timeSaturdays],
+  timeSecond: [timeSecond, timeSeconds],
+  timeMinute: [timeMinute, timeMinutes],
+  timeHour: [timeHour, timeHours],
+  timeDay: [timeDay, timeDays],
+  timeWeek: [timeWeek, timeWeeks],
+  timeSunday: [timeSunday, timeSundays],
+  timeMonday: [timeMonday, timeMondays],
+  timeTuesday: [timeTuesday, timeTuesdays],
+  timeWednesday: [timeWednesday, timeWednesdays],
+  timeThursday: [timeThursday, timeThursdays],
+  timeFriday: [timeFriday, timeFridays],
+  timeSaturday: [timeSaturday, timeSaturdays],
+  timeMonth: [timeMonth, timeMonths],
+  timeYear: [timeYear, timeYears],
+  timeMonth: [timeMonth, timeMonths],
+  timeYear: [timeYear, timeYears],
+  utcSecond: [utcSecond, utcSeconds],
+  utcMinute: [utcMinute, utcMinutes],
+  utcHour: [utcHour, utcHours],
+  utcDay: [utcDay, utcDays],
+  utcWeek: [utcWeek, utcWeeks],
   utcSunday: [utcSunday, utcSundays],
   utcMonday: [utcMonday, utcMondays],
   utcTuesday: [utcTuesday, utcTuesdays],
@@ -52,6 +79,8 @@ const timeMap = {
   utcThursday: [utcThursday, utcThursdays],
   utcFriday: [utcFriday, utcFridays],
   utcSaturday: [utcSaturday, utcSaturdays],
+  utcMonth: [utcMonth, utcMonths],
+  utcYear: [utcYear, utcYears]
 }
 
 export default function chart(id) {
@@ -62,7 +91,7 @@ export default function chart(id) {
       style = undefined,
       inset = null,
       zfield = null,
-      starting = 'sunday',
+      starting = 'timeSunday',
       dateFormat = timeFormat('%Y-%m-%d'),
       dateIdFormat = timeFormat('%Y%U'),
       D = d => new Date(d),
@@ -239,7 +268,7 @@ export default function chart(id) {
     data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
     // edge case when the first of the month is the first element of the chart
     data = data[0].length < 1 ? data.slice(1) : data
-    var monthNames = data
+    const monthNames = data
         .map((d,i) => ({order: i, d: retroDate(d[0])}))
         .filter(d => d && dayMonthNum(d.d) <= 7 && dayWeekNum(retroDate(d)) === checkStarting );
     xAxisData = monthNames;
@@ -409,7 +438,7 @@ export default function chart(id) {
       let eColumn = column.exit();
       column = column.enter()
           .append('g')
-          .attr('class','column')
+          .attr('class', 'column')
           .attr('id', columnId)
           .attr('transform', (_,i) => translate( animationDirection*(_inset.left + (++i * cellSize)+width), _inset.top + DEFAULT_AXIS_PADDING))
         .merge(column);
