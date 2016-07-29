@@ -53,9 +53,18 @@
       .rangeValue('timeDay')
       .tickAxisFormatValue('%H')
 
+    var dayWeeks = d3_rs_squares.html('day-weeks')
+      .intervalIndex('timeWeek')
+      .rangeIndex('timeYear')
+      .tickAxisFormatIndex('%U')
+      .intervalValue('timeDay')
+      .rangeValue('timeWeek')
+      .tickAxisFormatValue('%a')
+
     d3.select('#elm').datum(ddMatrix).call(daysHours);
     d3.select('#elm').datum(vMMatrix).call(valuesMonths);
     d3.select('#elm').datum(ddMatrix).call(quarterDayMonths);
+    d3.select('#elm').datum(ddMatrix).call(dayWeeks);
 
     </script>
   </body>
