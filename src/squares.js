@@ -343,8 +343,19 @@ export default function chart(id) {
 
     let _xInt = intervalIndex
     let _yInt = intervalValue
-    let _xFmt = timeFormat(tickAxisFormatIndex)
-    let _yFmt = timeFormat(tickAxisFormatValue)
+    let _xFmt = dI
+    let _yFmt = dI
+    if(typeof tickAxisFormatIndex === 'function'){
+      _xFmt = tickAxisFormatIndex
+    }else{
+      _xFmt = timeFormat(tickAxisFormatIndex)
+    }
+
+    if(typeof tickAxisFormatValue === 'function'){
+      _yFmt = tickAxisFormatValue
+    }else{
+      _yFmt = timeFormat(tickAxisFormatValue)
+    }
 
     if(_xInt){
 
