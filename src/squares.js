@@ -2,7 +2,9 @@
  * Copyright (c) 2016Redsift Limited. All rights reserved.
 */
 import { select } from 'd3-selection';
-import { timeFormat, timeFormatLocale, timeFormatDefaultLocale } from 'd3-time-format';
+import { timeFormat, 
+ // timeFormatLocale, timeFormatDefaultLocale 
+} from 'd3-time-format';
 import { sum, extent, max, min, range } from 'd3-array';
 import { nest} from 'd3-collection';
 import {
@@ -35,7 +37,7 @@ import {
   utcMonth, utcMonths,
   utcYear, utcYears,
 } from 'd3-time';
-import { scaleQuantize, scaleTime } from 'd3-scale';
+import { scaleQuantize } from 'd3-scale';
 // import { axisBottom, axisLeft, axisRight, axisTop } from 'd3-axis';
 import { html as svg } from '@redsift/d3-rs-svg';
 // import { units, time } from '@redsift/d3-rs-intl';
@@ -63,8 +65,6 @@ const timeMap = {
   timeThursday: [timeThursday, timeThursdays],
   timeFriday: [timeFriday, timeFridays],
   timeSaturday: [timeSaturday, timeSaturdays],
-  timeMonth: [timeMonth, timeMonths],
-  timeYear: [timeYear, timeYears],
   timeMonth: [timeMonth, timeMonths],
   timeYear: [timeYear, timeYears],
   utcSecond: [utcSecond, utcSeconds],
@@ -349,8 +349,6 @@ export default function chart(id) {
     if(_xInt){
 
       let _xIDs = d => _xFmt(timeMap[_xInt][0](d));
-      let _min = min(data, dX);
-      let _max = max(data, dX);
       let tU = timeMap[tickCountIndex][0]
       let tUs = timeMap[_xInt][1]
       let _xRange = tUs(tU(Date.now()), tU.offset(tU(Date.now()), 1));
