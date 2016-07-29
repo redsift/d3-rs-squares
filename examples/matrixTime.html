@@ -35,22 +35,22 @@
     var daysHours = d3_rs_squares.html('days-hours')
       .intervalIndex('timeHour')
       .intervalValue('timeDay')
-      .tickCountIndex('timeDay')
-      .tickCountValue('timeWeek')
+      .rangeIndex('timeDay')
+      .rangeValue('timeWeek')
       .tickAxisFormatIndex('%H')
       .tickAxisFormatValue('%a')
 
     var valuesMonths = d3_rs_squares.html('values-months')
       .intervalIndex('timeMonth')
-      .tickCountIndex('timeYear')
+      .rangeIndex('timeYear')
       .tickAxisFormatIndex('%b')
 
     var quarterDayMonths = d3_rs_squares.html('quarterDay-months')
       .intervalIndex('timeMonth')
-      .tickCountIndex('timeYear')
+      .rangeIndex('timeYear')
       .tickAxisFormatIndex('%b')
       .intervalValue('timeQuarterDay')
-      .tickCountValue('timeDay')
+      .rangeValue('timeDay')
       .tickAxisFormatValue('%H')
 
     d3.select('#elm').datum(ddMatrix).call(daysHours);

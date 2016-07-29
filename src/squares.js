@@ -96,8 +96,8 @@ export default function chart(id) {
       starting = 'timeSunday',
       intervalIndex = null,
       intervalValue = null,
-      tickCountIndex = null,
-      tickCountValue = null,
+      rangeIndex = null,
+      rangeValue = null,
       tickAxisFormatIndex = null,
       tickAxisFormatValue = null,
       dateFormat = timeFormat('%Y-%m-%d'),
@@ -349,7 +349,7 @@ export default function chart(id) {
     if(_xInt){
 
       let _xIDs = d => _xFmt(timeMap[_xInt][0](d));
-      let tU = timeMap[tickCountIndex][0]
+      let tU = timeMap[rangeIndex][0]
       let tUs = timeMap[_xInt][1]
       let _xRange = tUs(tU(Date.now()), tU.offset(tU(Date.now()), 1));
       _xRange.map(k =>{ 
@@ -358,7 +358,7 @@ export default function chart(id) {
       dX = d => _xIDs(d.x);
 
       if(_yInt && _yFmt){
-        let tU = timeMap[tickCountValue][0]
+        let tU = timeMap[rangeValue][0]
         let tUs= timeMap[_yInt][1]
         let _yRange = tUs(tU(Date.now()), tU.offset(tU(Date.now()), 1));
         let _yIDs = d => {
@@ -706,12 +706,12 @@ export default function chart(id) {
     return arguments.length ? (intervalValue = _, _impl) : intervalValue;
   };
   
-  _impl.tickCountIndex = function(_) {
-    return arguments.length ? (tickCountIndex = _, _impl) : tickCountIndex;
+  _impl.rangeIndex = function(_) {
+    return arguments.length ? (rangeIndex = _, _impl) : rangeIndex;
   };
   
-  _impl.tickCountValue = function(_) {
-    return arguments.length ? (tickCountValue = _, _impl) : tickCountValue;
+  _impl.rangeValue = function(_) {
+    return arguments.length ? (rangeValue = _, _impl) : rangeValue;
   };
   
   _impl.tickAxisFormatIndex = function(_) {
