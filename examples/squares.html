@@ -8,10 +8,7 @@
     <div id="elm">
 
     </div>
-    <div id="elm2">
 
-    </div>
-        
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="//static.redsift.io/reusable/d3-rs-theme/latest/d3-rs-theme.umd-es2015.min.js"></script>
     <script src="//static.redsift.io/reusable/d3-rs-tip/latest/d3-rs-tip.umd-es2015.min.js"></script>
@@ -93,7 +90,7 @@
 
     var matrixElm = d3.select('#elm')
       .datum(matrix)
-      .call(simpleM);  
+      .call(simpleM);
 
 
     chartElm.datum(points).transition().delay(1500).duration(1000)
@@ -106,14 +103,6 @@
     squareElm.datum(matrix).transition().delay(1500).call(squares.colour('blue'));
     squareElm.datum(matrix2).transition().delay(3000).duration(1000).ease(d3_rs_theme.easing()).call(squares);
     squareElm.datum(matrix3).transition().delay(4500).duration(1000).call(squares.zfield('value'));
-
-
-
-    // empty examples
-    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty-24').type('calendar.hours'));
-    d3.select('#elm').datum(null).call(d3_rs_squares.html('empty').type('calendar.days').starting('timeWednesday'));
-    d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-cooc').type('matrix.cooc'));
-    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty-matrix'));
 
 
     d3.select('svg').call(rstip);

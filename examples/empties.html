@@ -1,0 +1,53 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="https://static.redsift.io/ui/latest/css/full/redsift-xtra.min.css">
+
+  </head>
+  <body>
+    <h1>SVG Squares Demo</h2>
+    <div id="elm">
+
+    </div>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="//static.redsift.io/reusable/d3-rs-theme/latest/d3-rs-theme.umd-es2015.min.js"></script>
+    <script src="//static.redsift.io/reusable/d3-rs-tip/latest/d3-rs-tip.umd-es2015.min.js"></script>
+    <script src="/d3-rs-squares.umd-es2015.min.js"></script>
+    <script>
+
+    'use strict';
+
+    var rstip = d3_rs_tip.body()
+        .attr('class', 'd3-tip')
+        .direction('n')
+        .html(d => {
+          let r = '';
+          if(d.y){
+           r = d.x+','+d.y
+          }else{
+            if(d.x.indexOf('@') > -1){
+              r = d.x;
+            }else{
+              r = d3.timeFormat('%d %b %Y')(new Date(d.x))
+            }
+            r += ': ' + d.z
+          }
+          return r;
+        });
+
+
+
+    // empty examples
+    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty-24').type('calendar.hours'));
+    d3.select('#elm').datum(null).call(d3_rs_squares.html('empty').type('calendar.days').starting('timeWednesday'));
+    d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-cooc').type('matrix.cooc'));
+    d3.select('#elm').datum([]).call(d3_rs_squares.html('empty-matrix'));
+
+
+    d3.select('svg').call(rstip);
+    d3.selectAll('.square')
+      .on('mouseover', rstip.show)
+      .on('mouseout', rstip.hide)
+    </script>
+  </body>
+</html>
