@@ -38,6 +38,7 @@
 
 
     // empty examples
+    d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-calendar-utc').type('calendar.days').starting('utcWednesday').lastWeeks(2));
     d3.select('#elm').datum([]).call(d3_rs_squares.html('empty-24').type('calendar.hours'));
     d3.select('#elm').datum(null).call(d3_rs_squares.html('empty').type('calendar.days').starting('timeWednesday'));
     d3.select('#elm').datum(null).call(d3_rs_squares.html('empty-cooc').type('matrix.cooc'));

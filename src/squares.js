@@ -142,21 +142,24 @@ export default function chart(id) {
   ]
 
   function fullCalendar(lw, nw, dataByDate){
-    var today = Date.now();
+    var today = new Date().getTime()
     const tMD = timeMap[starting][0];
     const tMDs = timeMap[starting][1];
+    const tW = starting.indexOf('utc') > -1 ? utcWeek : timeWeek
+    const tD = starting.indexOf('utc') > -1 ? utcDay : timeDay
+    const tDs = starting.indexOf('utc') > -1 ? utcDays : timeDays
 
-    var sunNumB = lw > 0 ? timeWeek.offset(today, -lw-1) : today;
-    var sunNumE = nw > 0 ? timeWeek.offset(today, lw > 0 ? nw : nw+1) : today;
-    var timeDaysPast = s => timeDays(
+    var sunNumB = lw > 0 ? tW.offset(today, -lw-1) : today;
+    var sunNumE = nw > 0 ? tW.offset(today, lw > 0 ? nw : nw+1) : today;
+    var timeDaysPast = s => tDs(
       Math.max(tMD.offset(today, -lw), s),
-      Math.min(today, timeWeek.offset(s, 1)));
-    var timeDaysFuture = s => timeDays(
-      Math.max(timeDay.offset(today, -1), timeWeek.offset(s, -1)),
-      Math.min(timeWeek.offset(today, nw), s));
-    var timeDaysBoth = s => timeDays(
-      Math.max(tMD.offset(timeDay.offset(today, -1), -lw), s),
-      Math.min(tMD.offset(today, nw), timeWeek.offset(s, 1)));
+      Math.min(today, tW.offset(s, 1)));
+    var timeDaysFuture = s => tDs(
+      Math.max(tD.offset(today, -1), tW.offset(s, -1)),
+      Math.min(tW.offset(today, nw), s));
+    var timeDaysBoth = s => tDs(
+      Math.max(tMD.offset(tD.offset(today, -1), -lw), s),
+      Math.min(tMD.offset(today, nw), tW.offset(s, 1)));
     var timeSide = (lw > 0 && nw > 0) ? timeDaysBoth :
                     (lw > 0) ? timeDaysPast :
                       (nw > 0) ? timeDaysFuture : [];
@@ -270,6 +273,7 @@ export default function chart(id) {
     squareY = d => {
       const v = d.x || d;
       let e = dayWeekNum(v) - checkStarting + (dayWeekNum(v) < checkStarting ? 7 : 0);
+      // console.log(timeFormat('%a')(D(v)), dayWeekNum(v), e)
       return e * cellSize
     }
 
