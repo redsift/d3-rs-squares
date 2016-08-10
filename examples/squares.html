@@ -100,7 +100,7 @@
     chartElm.datum(points).transition().delay(4500).duration(1000).call(chart.nextWeeks(10));
     
 
-    squareElm.datum(matrix).transition().delay(1500).call(squares.colour('blue'));
+    squareElm.datum(matrix).transition().delay(1500).call(squares.color('blue'));
     squareElm.datum(matrix2).transition().delay(3000).duration(1000).ease(d3_rs_theme.easing()).call(squares);
     squareElm.datum(matrix3).transition().delay(4500).duration(1000).call(squares.zfield('value'));
 

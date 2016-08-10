@@ -133,7 +133,7 @@ export default function chart(id) {
       scale = 1.0,
       calendarColumn = 8,
       cellSize = (width - margin) / (lastWeeks+nextWeeks+2 +(lastWeeks+nextWeeks/4)),
-      colour = 'green';
+      color = 'green';
 
   let palette = (c) =>[
     presentation10.lighter[presentation10.names[c]],
@@ -197,7 +197,7 @@ export default function chart(id) {
       .map(data);
     colorScale = scaleQuantize()
         .domain(extent(dataByDayHour.entries(), d => d.value))
-        .range(palette(colour));
+        .range(palette(color));
 
     columnId = (d,i) => i;
 
@@ -260,7 +260,7 @@ export default function chart(id) {
 
     colorScale = scaleQuantize()
         .domain(extent(dataByDate.entries(), d => d.value))
-        .range(palette(colour));
+        .range(palette(color));
 
     columnId = (d,i) => {
       if(d && d.length < 1){
@@ -434,7 +434,7 @@ export default function chart(id) {
           min(matrix, d => min(d, dZ)),
           max(matrix, d => max(d, dZ))
           ])
-        .range(palette(colour))
+        .range(palette(color))
 
     const _w = width - (DEFAULT_AXIS_PADDING + margin + inset.left + inset.right);
     const _h = height - (DEFAULT_AXIS_PADDING + margin + inset.top + inset.bottom);
@@ -676,8 +676,8 @@ export default function chart(id) {
     return arguments.length ? (nextWeeks = +_, _impl) : nextWeeks;
   };
 
-  _impl.colour = function(_) {
-    return arguments.length ? (colour = _, _impl) : colour;
+  _impl.color = function(_) {
+    return arguments.length ? (color = _, _impl) : color;
   };
 
   _impl.type = function(_) {
