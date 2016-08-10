@@ -33,10 +33,10 @@
     ]
 
     var daysHours = d3_rs_squares.html('days-hours')
-      .intervalIndex('timeHour')
-      .intervalValue('timeDay')
       .rangeIndex('timeDay')
+      .intervalIndex('timeHour')
       .rangeValue('timeWeek')
+      .intervalValue('timeDay')
       .tickAxisFormatIndex('%H')
       .tickAxisFormatValue('%a')
 
