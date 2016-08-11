@@ -80,9 +80,7 @@ const timeMap = {
   utcFriday: [utcFriday, utcFridays],
   utcSaturday: [utcSaturday, utcSaturdays],
   utcMonth: [utcMonth, utcMonths],
-  utcYear: [utcYear, utcYears],
-  timeQuarterDay: [timeHour, timeHour.every(6).range],
-  utcQuarterDay: [timeHour, utcHour.every(6).range]
+  utcYear: [utcYear, utcYears]
 }
 
 export default function chart(id) {
@@ -345,50 +343,54 @@ export default function chart(id) {
     let setX = new Set();
     let setY = new Set();
 
-    let _xInt = intervalIndex
-    let _yInt = intervalValue
-    let _xFmt = dI
-    let _yFmt = dI
-    if(typeof tickAxisFormatIndex === 'function'){
-      _xFmt = tickAxisFormatIndex
-    }else{
-      _xFmt = timeFormat(tickAxisFormatIndex)
-    }
+    let intFn = propCheck => Array.isArray(propCheck) ? propCheck 
+      : timeMap.hasOwnProperty(propCheck) ? timeMap[propCheck] 
+      : null
+    let _xInt = intFn(intervalIndex)
+    let _yInt = intFn(intervalValue)
 
-    if(typeof tickAxisFormatValue === 'function'){
-      _yFmt = tickAxisFormatValue
-    }else{
-      _yFmt = timeFormat(tickAxisFormatValue)
-    }
+    let fmtFn = propCheck => !propCheck ? dI 
+        : typeof propCheck === 'function' ? propCheck 
+        : timeFormat(propCheck) 
+    let _xFmt = fmtFn(tickAxisFormatIndex)
+    let _yFmt = fmtFn(tickAxisFormatValue)
 
-    if(_xInt){
 
-      let _xIDs = d => _xFmt(timeMap[_xInt][0](d));
-      let tU = timeMap[rangeIndex][0]
-      let tUs = timeMap[_xInt][1]
-      let _xRange = tUs(tU(Date.now()), tU.offset(tU(Date.now()), 1));
+    let rangeFn = propCheck => typeof propCheck === 'function' ? propCheck
+      : timeMap.hasOwnProperty(propCheck) ? timeMap[propCheck][0]
+      : null
+
+    if(_xInt && rangeIndex){
+
+      let tU = timeDay
+      let _xRangeCount = 1
+      if(Array.isArray(rangeIndex)){
+        tU = rangeFn(rangeIndex[0]);
+        _xRangeCount = rangeIndex[1]
+      }else{
+        tU = rangeFn(rangeIndex)
+      }
+
+      let _xIDs = d => _xFmt(_xInt[0](d));
+      let tUs = _xInt[1]
+      let _xRange = tUs(tU(Date.now()), tU.offset(tU(Date.now()), _xRangeCount));
       _xRange.map(k =>{ 
         setX.add(_xIDs(k)) 
       })
       dX = d => _xIDs(d.x);
 
       if(_yInt && _yFmt){
-        let tU = timeMap[rangeValue][0]
-        let tUs= timeMap[_yInt][1]
-        let _yRange = tUs(tU(Date.now()), tU.offset(tU(Date.now()), 1));
-        let _yIDs = d => {
-          const f = timeMap[_yInt][0]
-          const a = _yFmt(f(d))
-          const _yR = _yRange.map(d => _yFmt(f(d)))
-          if(_yInt.indexOf('QuarterDay') > -1){
-            return a < _yR[1] ? _yR[0]
-              : a < _yR[2] ? _yR[1]
-              : a < _yR[3] ? _yR[2]
-              : _yR[3];
-          }
-
-          return a;
-        };
+        let _yRangeCount = 1
+        let tU = timeHour
+        if(Array.isArray(rangeValue)){
+          tU = rangeFn(rangeValue[0])
+          _yRangeCount = rangeValue[1]
+        }else{
+          tU = rangeFn(rangeValue)
+        }
+        let tUs = _yInt[1]
+        let _yRange = tUs(tU(Date.now()), tU.offset(tU(Date.now()), _yRangeCount));
+        let _yIDs = d => _yFmt(_yInt[0](d));
         _yRange.map(k =>{
           setY.add(_yIDs(k))
         })
