@@ -54,7 +54,9 @@
 
     var chart = d3_rs_squares.html('calendar').type('calendar.days');
 
-    var chart24 = d3_rs_squares.html('calendar24').type('calendar.hours');
+    var chart24 = d3_rs_squares.html('calendar24')
+      .type('calendar.hours')
+      .onClick(d => { console.log(d); });
 
     var simpleM = d3_rs_squares.html('simpleM')
       .inset({left: 80, top: 80, bottom: 0, right: 0})
