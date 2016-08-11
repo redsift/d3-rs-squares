@@ -35,7 +35,7 @@ import {
   utcDay, utcDays,
   utcWeek, utcWeeks,
   utcMonth, utcMonths,
-  utcYear, utcYears,
+  utcYear, utcYears
 } from 'd3-time';
 import { scaleQuantize } from 'd3-scale';
 // import { axisBottom, axisLeft, axisRight, axisTop } from 'd3-axis';
@@ -131,7 +131,8 @@ export default function chart(id) {
       scale = 1.0,
       calendarColumn = 8,
       cellSize = (width - margin) / (lastWeeks+nextWeeks+2 +(lastWeeks+nextWeeks/4)),
-      color = 'green';
+      color = 'green',
+      onClick = null;
 
   let palette = (c) =>[
     presentation10.lighter[presentation10.names[c]],
@@ -561,6 +562,10 @@ export default function chart(id) {
           .attr('x', 0)
           .attr('fill', d => dZ(d) ? colorScale(dZ(d)) : EMPTY_COLOR)
 
+      if(onClick){
+        square.on('click', d => onClick(d))
+      }
+
       eSquare.attr('width', cellSize)
             .attr('height', cellSize)
             .attr('data-x', dX)
@@ -737,6 +742,10 @@ export default function chart(id) {
   
   _impl.tickAxisFormatValue = function(_) {
     return arguments.length ? (tickAxisFormatValue = _, _impl) : tickAxisFormatValue;
+  };
+
+  _impl.onClick = function(value) {
+    return arguments.length ? (onClick = value, _impl) : onClick;
   };
 
   return _impl;
