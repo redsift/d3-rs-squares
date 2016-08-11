@@ -12,6 +12,18 @@
 
 [View @redsift/d3-rs-squares on Codepen](https://....)
 
+### Matrix chart
+
+![Sample occurrence chart](https://bricks.redsift.io/reusable/d3-rs-squares.svg?_datum=[{%22x%22:%22a1%22,%22y%22:%22b1%22,%22z%22:10},{%22x%22:%22c1%22,%22y%22:%22d1%22,%22z%22:30}])
+
+### Co occurrence chart
+
+![Sample occurrence chart](https://bricks.redsift.io/reusable/d3-rs-squares.svg?_datum=[{%22x%22:%22a%22,%22y%22:%22c%22,%22z%22:3},{%22x%22:%22c%22,%22y%22:%22a%22,%22z%22:13}]&type=matrix.cooc)
+
+### Calendar chart
+
+![Sample calendar chart](https://bricks.redsift.io/reusable/d3-rs-squares.svg?_datum=[{%22d%22:1470416243000,%22v%22:10},{%22d%22:1470934643000,%22v%22:20}]&type=calendar.days)
+
 ## Usage
 
 ### Browser
