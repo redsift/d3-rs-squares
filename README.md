@@ -74,8 +74,8 @@ For the co-occurrence matrix the expected JSON object should be:
 |`lastWeeks`| calendar.* | *Integer* Number of weeks in the past from now | Y|
 |`nextWeeks`| calendar.* | *Integer* Number of weeks in the future from now | Y |
 |`starting`| calendar.* | *String* First day of the week. Default is `'timeSunday'` Available options: (`'timeMonday'`, `'timeTuesday'`, ...) or the utc counterparts: (`'utcMonday'`, `'utcTuesday'`, ...) based on the [d3-time](https://github.com/d3/d3-time) package| |
-|`rangeIndex`, `rangeValue`| matrix | *String* ranges from [d3-time#ranges](https://github.com/d3/d3-time#ranges) (Milliseconds not supported) | |
-|`intervalIndex`, `intervalValue`| matrix | *String* intervals from [d3-time#intervals](https://github.com/d3/d3-time#https://github.com/d3/d3-time#intervals) (Milliseconds not supported) | |
+|`rangeIndex`, `rangeValue`| matrix | *String, Function, Array* ranges from [d3-time#ranges](https://github.com/d3/d3-time#ranges) (Milliseconds not supported) Custom ranges need to follow the [d3-time#range](https://github.com/d3/d3-time#interval_range) paradigm. If an array is supplied first expected element is the range function and second a cardinality override of the range unit e.g. `[d3.timeYear, 2]` for a range of 2 years | |
+|`intervalIndex`, `intervalValue`| matrix | *String, Array* intervals from [d3-time#intervals](https://github.com/d3/d3-time#intervals) (Milliseconds not supported). For custom intervals an array is expected with the interval and range functions following the paradigm in [d3-time](https://github.com/d3/d3-time) e.g. `[timeHour, timeHours]` | |
 
 
 \* In the default orientation *\*Index* and *\*Value* apply respectively to the the *x* and *y* axis 
