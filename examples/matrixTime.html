@@ -45,13 +45,27 @@
       .rangeIndex('timeYear')
       .tickAxisFormatIndex('%b')
 
+    var qInterval = d3.timeHour
+    var qRange = d3.timeHour.every(6).range
     var quarterDayMonths = d3_rs_squares.html('quarterDay-months')
-      .intervalIndex('timeMonth')
       .rangeIndex('timeYear')
+      .intervalIndex('timeMonth')
       .tickAxisFormatIndex('%b')
-      .intervalValue('timeQuarterDay')
       .rangeValue('timeDay')
-      .tickAxisFormatValue('%H')
+      .intervalValue([qInterval, qRange])
+      .tickAxisFormatValue(d => {
+        var fmt = d3.timeFormat('%H')
+        var hours = qRange(
+          d3.timeDay(Date.now()),
+          d3.timeDay.offset(d3.timeDay(Date.now()), 1)
+        )
+        const a = fmt(qInterval(d))
+        const hFormatted = hours.map(i => fmt(qInterval(i)))
+        return a < hFormatted[1] ? hFormatted[0]
+              : a < hFormatted[2] ? hFormatted[1]
+              : a < hFormatted[3] ? hFormatted[2]
+              : hFormatted[3];
+      })
 
     var dayWeeks = d3_rs_squares.html('day-weeks')
       .intervalIndex('timeWeek')
