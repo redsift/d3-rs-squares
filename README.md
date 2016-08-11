@@ -4,7 +4,9 @@
 
 ## Builds
 
-[![Circle CI](https://circleci.com/gh/Redsift/d3-rs-squares.svg?style=svg)](https://circleci.com/gh/Redsift/d3-rs-squares)
+[![Circle CI](https://circleci.com/gh/redsift/d3-rs-squares.svg?style=svg)](https://circleci.com/gh/redsift/d3-rs-squares)
+[![npm](https://img.shields.io/npm/v/@redsift/d3-rs-squares.svg?style=flat-square)](https://www.npmjs.com/package/@redsift/d3-rs-squares)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/redsift/d3-rs-squares/master/LICENSE)
 
 ## Example
 
