@@ -83,8 +83,10 @@ For the co-occurrence matrix the expected JSON object should be:
 |`zfield`| matrix.* |*String* When `z` field is an object this parameter gives you the ability to use the value under a different key e.g. for `{x:'',y:'',z:{prop1:''}}` to use the value of the `prop1` key pass the name of the key `'prop1'` to the parameter| |
 |`cellSize`|* | *Integer* Get or override calculated size of cells | |
 |`type`| |`'calendar.days'`, `'calendar.hours'`, `'matrix.cooc'`, `'matrix'`(default)|
-|`lastWeeks`| calendar.* | *Integer* Number of weeks in the past from now | Y|
-|`nextWeeks`| calendar.* | *Integer* Number of weeks in the future from now | Y |
+|`minDay`| `'calendar.days'` | *Timestamp* Override the earliest day of the dataset | Y|
+|`maxDay`| `'calendar.days'` | *Timestamp* Override the latest day of the dataset | Y |
+|`nice` | `'calendar.days'`  | *Boolean* (deault: yes) Extend range of calendar to display whole months | N |
+|`monthSeparation` | `'calendar.days'`| *Boolean* (deault: yes) Add extra space between months| N |
 |`starting`| calendar.* | *String* First day of the week. Default is `'timeSunday'` Available options: (`'timeMonday'`, `'timeTuesday'`, ...) or the utc counterparts: (`'utcMonday'`, `'utcTuesday'`, ...) based on the [d3-time](https://github.com/d3/d3-time) package| |
 |`rangeIndex`, `rangeValue`| matrix | *String, Function, Array* ranges from [d3-time#ranges](https://github.com/d3/d3-time#ranges) (Milliseconds not supported) Custom ranges need to follow the [d3-time#range](https://github.com/d3/d3-time#interval_range) paradigm. If an array is supplied first expected element is the range function and second a cardinality override of the range unit e.g. `[d3.timeYear, 2]` for a range of 2 years | |
 |`intervalIndex`, `intervalValue`| matrix | *String, Array* intervals from [d3-time#intervals](https://github.com/d3/d3-time#intervals) (Milliseconds not supported). For custom intervals an array is expected with the interval and range functions following the paradigm in [d3-time](https://github.com/d3/d3-time) e.g. `[timeHour, timeHours]` | |
