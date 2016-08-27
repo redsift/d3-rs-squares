@@ -52,7 +52,7 @@
       .inset({left: 80, top: 80, bottom: 0, right: 0})
       .height(400);
 
-    var chart = d3_rs_squares.html('calendar').type('calendar.days');
+    var chart = d3_rs_squares.html('calendar').type('calendar.days').nice(false)
 
     var chart24 = d3_rs_squares.html('calendar24')
       .type('calendar.hours')
@@ -97,9 +97,9 @@
 
     chartElm.datum(points).transition().delay(1500).duration(1000)
       .ease(d3_rs_theme.easing())
-      .call(chart.lastWeeks(20));
-    chartElm.datum(points).transition().delay(3000).duration(1000).call(chart.lastWeeks(10));
-    chartElm.datum(points).transition().delay(4500).duration(1000).call(chart.nextWeeks(10));
+      .call(chart.minDate(1461682842000).nice(true));
+    chartElm.datum(points).transition().delay(3000).duration(1000).call(chart);
+    chartElm.datum(points).transition().delay(4500).duration(1000).call(chart.maxDate(Date.now()));
     
 
     squareElm.datum(matrix).transition().delay(1500).call(squares.color('blue'));

@@ -37,7 +37,7 @@ import {
   utcMonth, utcMonths,
   utcYear, utcYears
 } from 'd3-time';
-import { scaleQuantize } from 'd3-scale';
+import { scaleQuantize, scaleTime } from 'd3-scale';
 // import { axisBottom, axisLeft, axisRight, axisTop } from 'd3-axis';
 import { html as svg } from '@redsift/d3-rs-svg';
 // import { units, time } from '@redsift/d3-rs-intl';
@@ -100,7 +100,12 @@ export default function chart(id) {
       tickAxisFormatValue = null,
       dateFormat = timeFormat('%Y-%m-%d'),
       dateIdFormat = timeFormat('%Y%U'),
+      monthSeparation = true,
+      nice = true,
+      minDate = null,
+      maxDate = null,
       D = d => new Date(d),
+      DT = d => D(d).getTime(),
       dayWeekNum = d => D(d).getDay(),
       dayMonthNum = d => D(d).getDate(),
       dayHourFormat = timeFormat('%w-%-H'),
@@ -124,13 +129,11 @@ export default function chart(id) {
       margin = 26,
       width = 600,
       height = null,
-      lastWeeks = 0,
-      nextWeeks = 0,
       type = 'matrix',
       subType = null,
       scale = 1.0,
       calendarColumn = 8,
-      cellSize = (width - margin) / (lastWeeks+nextWeeks+2 +(lastWeeks+nextWeeks/4)),
+      cellSize = 10,
       color = 'green',
       onClick = null;
 
@@ -140,35 +143,48 @@ export default function chart(id) {
     presentation10.darker[presentation10.names[c]]  
   ]
 
-  function fullCalendar(lw, nw, dataByDate){
-    var today = new Date().getTime()
+  function fullCalendar(dataByDate){
+    if(dataByDate.size() === 0){
+      maxDate = maxDate || Date.now();
+      minDate = minDate || timeMonth.offset(Date.now(), -2);
+    }
+    let _extent = extent(Array.from(dataByDate.keys(), DT))
+    let _minDate = DT(minDate) || _extent[0];
+    let _maxDate = DT(maxDate) || _extent[1];
     const tMD = timeMap[starting][0];
     const tMDs = timeMap[starting][1];
-    const tW = starting.indexOf('utc') > -1 ? utcWeek : timeWeek
-    const tD = starting.indexOf('utc') > -1 ? utcDay : timeDay
-    const tDs = starting.indexOf('utc') > -1 ? utcDays : timeDays
+    const tM = starting.indexOf('utc') > -1 ? utcMonth : timeMonth;
+    const tW = starting.indexOf('utc') > -1 ? utcWeek : timeWeek;
+    const tD = starting.indexOf('utc') > -1 ? utcDay : timeDay;
+    const tDs = starting.indexOf('utc') > -1 ? utcDays : timeDays;
 
-    var sunNumB = lw > 0 ? tW.offset(today, -lw-1) : today;
-    var sunNumE = nw > 0 ? tW.offset(today, lw > 0 ? nw : nw+1) : today;
-    var timeDaysPast = s => tDs(
-      Math.max(tMD.offset(today, -lw), s),
-      Math.min(today, tW.offset(s, 1)));
-    var timeDaysFuture = s => tDs(
-      Math.max(tD.offset(today, -1), tW.offset(s, -1)),
-      Math.min(tW.offset(today, nw), s));
-    var timeDaysBoth = s => tDs(
-      Math.max(tMD.offset(tD.offset(today, -1), -lw), s),
-      Math.min(tMD.offset(today, nw), tW.offset(s, 1)));
-    var timeSide = (lw > 0 && nw > 0) ? timeDaysBoth :
-                    (lw > 0) ? timeDaysPast :
-                      (nw > 0) ? timeDaysFuture : [];
+    if(nice){
+      // show whole months
+      _minDate = tM(_minDate);
+      _maxDate = tD.offset(tM.offset(tM(_maxDate),1),-1)
+    }
 
-    var result = [];
-    tMDs(sunNumB, sunNumE)
-      .map(weekDay =>{
+    let weekScale = scaleTime()
+      .domain([tMD.offset(_minDate, -1), _maxDate])
+      .ticks(tMD,1);
+
+    if(!nice){
+      _minDate = tD(_minDate);
+    }
+
+    let weekFirstDay = d => Math.max(_minDate, DT(d))
+    let weekLastDay = d => Math.min(_maxDate, tD.offset(tMD.offset(d, 1), -1))
+    let dayScale = s =>scaleTime()
+      .domain([weekFirstDay(s), weekLastDay(s)])
+      .ticks(tD, 1)
+
+
+    let result = [];
+    weekScale.map(weekDay =>{
         let temp = [];
-        timeSide(weekDay).map(d => {
-          if(isFirstMonth(d)){
+        if(weekFirstDay(weekDay) > weekLastDay(weekDay)) return;
+        dayScale(weekDay).map(d => {
+          if(monthSeparation && isFirstMonth(d)){
             if(temp.length > 0){
               result.push(temp.slice(0));
               temp = [];
@@ -247,7 +263,6 @@ export default function chart(id) {
 
   function dateValueCalc(data, inset){
     data = data || [];
-    lastWeeks = lastWeeks === 0 && nextWeeks === 0 ? 12 : lastWeeks;
     let retroDate = d => d ? (d.d || d.x) : null;
     let retroValue = d => (+d.v || +(dZ(d)));
     const tMD = timeMap[starting][0];
@@ -276,7 +291,7 @@ export default function chart(id) {
       return e * cellSize
     }
 
-    data = fullCalendar(lastWeeks, nextWeeks, dataByDate);
+    data = fullCalendar(dataByDate);
     // edge case when the first of the month is the first element of the chart
     data = data[0].length < 1 ? data.slice(1) : data
     const monthNames = data
@@ -675,12 +690,12 @@ export default function chart(id) {
     return arguments.length ? (scale = _, _impl) : scale;
   }; 
 
-  _impl.lastWeeks = function(_) {
-    return arguments.length ? (lastWeeks = +_, _impl) : lastWeeks;
+  _impl.minDate = function(_) {
+    return arguments.length ? (minDate = +_, _impl) : minDate;
   };
 
-  _impl.nextWeeks = function(_) {
-    return arguments.length ? (nextWeeks = +_, _impl) : nextWeeks;
+  _impl.maxDate = function(_) {
+    return arguments.length ? (maxDate = +_, _impl) : maxDate;
   };
 
   _impl.color = function(_) {
@@ -747,6 +762,14 @@ export default function chart(id) {
   _impl.onClick = function(value) {
     return arguments.length ? (onClick = value, _impl) : onClick;
   };
+
+  _impl.monthSeparation = function(_){
+    return arguments.length ? (monthSeparation = _, _impl) : monthSeparation;
+  }
+
+  _impl.nice = function(_){
+    return arguments.length ? (nice = _, _impl) : nice;
+  }
 
   return _impl;
 }
