@@ -83,8 +83,8 @@ For the co-occurrence matrix the expected JSON object should be:
 |`zfield`| matrix.* |*String* When `z` field is an object this parameter gives you the ability to use the value under a different key e.g. for `{x:'',y:'',z:{prop1:''}}` to use the value of the `prop1` key pass the name of the key `'prop1'` to the parameter| |
 |`cellSize`|* | *Integer* Get or override calculated size of cells | |
 |`type`| |`'calendar.days'`, `'calendar.hours'`, `'matrix.cooc'`, `'matrix'`(default)|
-|`minDay`| `'calendar.days'` | *Timestamp* Override the earliest day of the dataset | Y|
-|`maxDay`| `'calendar.days'` | *Timestamp* Override the latest day of the dataset | Y |
+|`minDate`| `'calendar.days'` | *Timestamp* Override the earliest day of the dataset | Y|
+|`maxDate`| `'calendar.days'` | *Timestamp* Override the latest day of the dataset | Y |
 |`nice` | `'calendar.days'`  | *Boolean* (deault: yes) Extend range of calendar to display whole months | N |
 |`monthSeparation` | `'calendar.days'`| *Boolean* (deault: yes) Add extra space between months| N |
 |`starting`| calendar.* | *String* First day of the week. Default is `'timeSunday'` Available options: (`'timeMonday'`, `'timeTuesday'`, ...) or the utc counterparts: (`'utcMonday'`, `'utcTuesday'`, ...) based on the [d3-time](https://github.com/d3/d3-time) package| |
