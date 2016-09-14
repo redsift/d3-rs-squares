@@ -1,6 +1,6 @@
 {
   "name": "@redsift/d3-rs-squares",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Generates a co-occurrence matrix or a calendar chart using D3v4.",
   "keywords": [
     "redsift",
