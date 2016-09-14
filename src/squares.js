@@ -8,34 +8,34 @@ import { timeFormat,
 import { sum, extent, max, min, range } from 'd3-array';
 import { nest} from 'd3-collection';
 import {
-  timeSecond,
-  timeMinute,
+  timeSecond, timeSeconds,
+  timeMinute, timeMinutes,
   timeHour, timeHours,
   timeDay, timeDays,
-  timeWeek,
-  timeMonth,
-  timeYear,
-  timeSunday,
-  utcSunday,
-  timeMonday,
-  utcMonday,
-  timeTuesday,
-  utcTuesday,
-  timeWednesday,
-  utcWednesday,
-  timeThursday,
-  utcThursday,
-  timeFriday,
-  utcFriday,
-  timeSaturday,
-  utcSaturday,
-  utcSecond,
-  utcMinute,
-  utcHour,
-  utcDay,
-  utcWeek,
-  utcMonth,
-  utcYear
+  timeWeek, timeWeeks,
+  timeMonth, timeMonths,
+  timeYear, timeYears,
+  timeSunday, timeSundays,
+  utcSunday, utcSundays,
+  timeMonday, timeMondays,
+  utcMonday, utcMondays,
+  timeTuesday, timeTuesdays,
+  utcTuesday, utcTuesdays,
+  timeWednesday, timeWednesdays,
+  utcWednesday, utcWednesdays,
+  timeThursday, timeThursdays,
+  utcThursday, utcThursdays,
+  timeFriday, timeFridays,
+  utcFriday, utcFridays,
+  timeSaturday, timeSaturdays,
+  utcSaturday, utcSaturdays,
+  utcSecond, utcSeconds,
+  utcMinute, utcMinutes,
+  utcHour, utcHours,
+  utcDay, utcDays,
+  utcWeek, utcWeeks,
+  utcMonth, utcMonths,
+  utcYear, utcYears
 } from 'd3-time';
 import { scaleQuantize, scaleTime } from 'd3-scale';
 // import { axisBottom, axisLeft, axisRight, axisTop } from 'd3-axis';
@@ -53,34 +53,34 @@ const DEFAULT_INSET = 24;
 const DEFAULT_AXIS_PADDING = 8;
 const EMPTY_COLOR = '#f2f2f2';
 const timeMap = {
-  timeSecond: timeSecond,
-  timeMinute: timeMinute,
-  timeHour: timeHour,
-  timeDay: timeDay,
-  timeWeek: timeWeek,
-  timeSunday: timeSunday,
-  timeMonday: timeMonday,
-  timeTuesday: timeTuesday,
-  timeWednesday: timeWednesday,
-  timeThursday: timeThursday,
-  timeFriday: timeFriday,
-  timeSaturday: timeSaturday,
-  timeMonth: timeMonth,
-  timeYear: timeYear,
-  utcSecond: utcSecond,
-  utcMinute: utcMinute,
-  utcHour: utcHour,
-  utcDay: utcDay,
-  utcWeek: utcWeek,
-  utcSunday: utcSunday,
-  utcMonday: utcMonday,
-  utcTuesday: utcTuesday,
-  utcWednesday: utcWednesday,
-  utcThursday: utcThursday,
-  utcFriday: utcFriday,
-  utcSaturday: utcSaturday,
-  utcMonth: utcMonth,
-  utcYear: utcYear
+  timeSecond: [timeSecond, timeSeconds],
+  timeMinute: [timeMinute, timeMinutes],
+  timeHour: [timeHour, timeHours],
+  timeDay: [timeDay, timeDays],
+  timeWeek: [timeWeek, timeWeeks],
+  timeSunday: [timeSunday, timeSundays],
+  timeMonday: [timeMonday, timeMondays],
+  timeTuesday: [timeTuesday, timeTuesdays],
+  timeWednesday: [timeWednesday, timeWednesdays],
+  timeThursday: [timeThursday, timeThursdays],
+  timeFriday: [timeFriday, timeFridays],
+  timeSaturday: [timeSaturday, timeSaturdays],
+  timeMonth: [timeMonth, timeMonths],
+  timeYear: [timeYear, timeYears],
+  utcSecond: [utcSecond, utcSeconds],
+  utcMinute: [utcMinute, utcMinutes],
+  utcHour: [utcHour, utcHours],
+  utcDay: [utcDay, utcDays],
+  utcWeek: [utcWeek, utcWeeks],
+  utcSunday: [utcSunday, utcSundays],
+  utcMonday: [utcMonday, utcMondays],
+  utcTuesday: [utcTuesday, utcTuesdays],
+  utcWednesday: [utcWednesday, utcWednesdays],
+  utcThursday: [utcThursday, utcThursdays],
+  utcFriday: [utcFriday, utcFridays],
+  utcSaturday: [utcSaturday, utcSaturdays],
+  utcMonth: [utcMonth, utcMonths],
+  utcYear: [utcYear, utcYears]
 }
 
 export default function chart(id) {
@@ -151,9 +151,12 @@ export default function chart(id) {
     let _extent = extent(Array.from(dataByDate.keys(), DT))
     let _minDate = DT(minDate) || _extent[0];
     let _maxDate = DT(maxDate) || _extent[1];
-    const tMD = timeMap[starting];
+    const tMD = timeMap[starting][0];
+    const tMDs = timeMap[starting][1];
     const tM = starting.indexOf('utc') > -1 ? utcMonth : timeMonth;
+    const tW = starting.indexOf('utc') > -1 ? utcWeek : timeWeek;
     const tD = starting.indexOf('utc') > -1 ? utcDay : timeDay;
+    const tDs = starting.indexOf('utc') > -1 ? utcDays : timeDays;
 
     if(nice){
       // show whole months
@@ -201,7 +204,7 @@ export default function chart(id) {
   }
 
   function hourCalendar(data, inset){
-    const tMD = timeMap[starting];
+    const tMD = timeMap[starting][0];
 
     let dataByDayHour = nest()
       .key(d => dayHourFormat(D(d.d)))
@@ -262,7 +265,7 @@ export default function chart(id) {
     data = data || [];
     let retroDate = d => d ? (d.d || d.x) : null;
     let retroValue = d => (+d.v || +(dZ(d)));
-    const tMD = timeMap[starting];
+    const tMD = timeMap[starting][0];
     const checkStarting = dayWeekNum(tMD(Date.now()));
     let dataByDate = nest()
       .key(d => dateFormat(D(retroDate(d))))
@@ -370,7 +373,7 @@ export default function chart(id) {
 
 
     let rangeFn = propCheck => typeof propCheck === 'function' ? propCheck
-      : timeMap.hasOwnProperty(propCheck) ? timeMap[propCheck]
+      : timeMap.hasOwnProperty(propCheck) ? timeMap[propCheck][0]
       : null
 
     if(_xInt && rangeIndex){
