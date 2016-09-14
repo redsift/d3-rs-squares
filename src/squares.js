@@ -152,11 +152,8 @@ export default function chart(id) {
     let _minDate = DT(minDate) || _extent[0];
     let _maxDate = DT(maxDate) || _extent[1];
     const tMD = timeMap[starting][0];
-    const tMDs = timeMap[starting][1];
     const tM = starting.indexOf('utc') > -1 ? utcMonth : timeMonth;
-    const tW = starting.indexOf('utc') > -1 ? utcWeek : timeWeek;
     const tD = starting.indexOf('utc') > -1 ? utcDay : timeDay;
-    const tDs = starting.indexOf('utc') > -1 ? utcDays : timeDays;
 
     if(nice){
       // show whole months
