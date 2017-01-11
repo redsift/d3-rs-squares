@@ -24,7 +24,7 @@
   "scripts": {
     "serve": "gulp -o d3-rs-squares -g d3-selection serve",
     "build": "gulp -o d3-rs-squares -g d3-selection build",
-    "pretest": "npm outdated && npm run build",
+    "pretest": "(npm outdated || true) && npm run build",
     "test": "tape 'test/**/*-test.js' && eslint index.js src",
     "prepublish": "npm run build"
   },
