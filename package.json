@@ -31,13 +31,13 @@
   "dependencies": {
     "@redsift/d3-rs-svg": "~0.2.5",
     "@redsift/d3-rs-theme": "^0.4.2",
-    "d3-array": "^1.0.1",
-    "d3-axis": "^1.0.3",
-    "d3-collection": "1.0.1",
-    "d3-scale": "^1.0.3",
+    "d3-array": "^1.1.0",
+    "d3-axis": "^1.0.5",
+    "d3-collection": "^1.0.2",
+    "d3-scale": "^1.0.4",
     "d3-selection": "^1.0.2",
-    "d3-time": "1.0.2",
-    "d3-time-format": "^2.0.2"
+    "d3-time": "^1.0.5",
+    "d3-time-format": "^2.0.4"
   },
   "devDependencies": {
     "@redsift/tape-reel": "~0.1.0",
@@ -55,7 +55,7 @@
     "rollup-plugin-commonjs": "^7.0.0",
     "rollup-plugin-json": "^2.1.0",
     "rollup-plugin-node-resolve": "^2.0.0",
-    "rollup-stream": "1.19.0",
+    "rollup-stream": "^1.19.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "yargs": "^7.0.1"
