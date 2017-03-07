@@ -59,7 +59,11 @@
       .onClick(d => { console.log(d); });
 
     var simpleM = d3_rs_squares.html('simpleM')
+      .inset({left: 80, top: 80, bottom: 0, right: 0});
+
+    var simpleMColoured = d3_rs_squares.html('simpleMColoured')
       .inset({left: 80, top: 80, bottom: 0, right: 0})
+      .color(['#1b7837','#7fbf7b','#d9f0d3','#e7d4e8','#af8dc3', '#762a83']);
 
     var rstip = d3_rs_tip.body()
         .attr('class', 'd3-tip')
@@ -94,6 +98,9 @@
       .datum(matrix)
       .call(simpleM);
 
+    var matrixElm2 = d3.select('#elm')
+      .datum(matrix)
+      .call(simpleMColoured);
 
     chartElm.datum(points).transition().delay(1500).duration(1000)
       .ease(d3_rs_theme.easing())

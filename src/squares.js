@@ -137,12 +137,16 @@ export default function chart(id) {
       color = 'green',
       onClick = null;
 
-  let palette = (c) =>[
-    presentation10.lighter[presentation10.names[c]],
-    presentation10.standard[presentation10.names[c]],
-    presentation10.darker[presentation10.names[c]]  
-  ]
-
+  let palette = (c) => {
+    if(Array.isArray(c)){
+      return c;
+    }
+    return [
+      presentation10.lighter[presentation10.names[c]],
+      presentation10.standard[presentation10.names[c]],
+      presentation10.darker[presentation10.names[c]]  
+    ];
+  }
   function fullCalendar(dataByDate){
     if(dataByDate.size() === 0){
       maxDate = maxDate || Date.now();
